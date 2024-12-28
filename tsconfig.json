@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     "target": "ES2021",
-    "module": "ESNext",
+    "module": "commonjs",
     "rootDir": "app",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node"
   },
   "include": ["app"],
   "exclude": ["node_modules", "dist", "tests"]
