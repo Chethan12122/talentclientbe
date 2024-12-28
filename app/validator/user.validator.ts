@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any*/
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { z } from "zod";
 import { Request, Response, NextFunction } from "express";
 import { NonRetryableException } from "../errors/base.error";
 import {
-  ApplicationDynamicErrors,
   ApplicationStaticErrors,
 } from "../errors/application.error";
 import { isValidPhoneNumber } from "../validator/common.validator";
@@ -13,11 +14,8 @@ const userRegisterRequestSchema = z.object({
   phone_number: z.string().refine((data) => isValidPhoneNumber(data), {
     message: "Invalid phone number",
   }),
-  password: z
-    .string()
-    .min(1)
-    .refine((data) => data.length >= 8, {
-      message: "Password must be at least 8 characters long ",
+  password: z.string().min(1).refine((data) => data.length >= 8, {
+      message: "Password must be at least 8 characters long",
     }),
 });
 
@@ -30,7 +28,6 @@ function validateUserRegisterRequest(
     userRegisterRequestSchema.parse(req.body);
     next();
   } catch (error: any) {
-    console.log(error);
     throw new NonRetryableException(
       ApplicationStaticErrors.INVALID_REGISTER_REQUEST
     );

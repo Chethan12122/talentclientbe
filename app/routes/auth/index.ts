@@ -4,8 +4,6 @@ import { register} from './auth.routes'
 import { validateUserRegisterRequest } from '../../validator/user.validator';
 const router = express.Router({});
 
-router.route("/register")
-    .post(validateUserRegisterRequest, register)
-    .all(methodNotAllowed)
+router.route("/register").post(validateUserRegisterRequest, register).all(methodNotAllowed)
 
 export default router;
