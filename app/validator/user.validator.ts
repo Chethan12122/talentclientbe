@@ -17,7 +17,7 @@ const userRegisterRequestSchema = z.object({
     .string()
     .min(1)
     .refine((data) => data.length >= 8, {
-      message: "Password must be at least 8 characters long",
+      message: "Password must be at least 8 characters long ",
     }),
 });
 
