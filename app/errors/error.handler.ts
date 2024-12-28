@@ -25,7 +25,7 @@ function genericHandler(
   next: unknown // Avoid using `Function`, use `unknown` instead
 ): void {
   logger.error(
-    `Failed to process the URL :: ${req?.url} error :: ${error?.stack}`
+    `Failed to process the URL :: ${req?.url} error :: ${error?.description}`
   );
 
   let statusCode = ApplicationStaticErrors.SOMETHING_WENT_WRONG.statusCode;
