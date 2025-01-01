@@ -1,13 +1,82 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { logger } from "../../common/logger";
-import { RegisterRequestBody } from "../../models/auth/auth.interface";
-import supabaseSdk from '../../sdk/supabase.sdk';
+import { ApplicationStaticErrors } from "../../errors/application.error";
+import { NonRetryableException } from "../../errors/base.error";
+import {
+  LoginRequestBody,
+  RegisterRequestBody,
+  VerifyRequestBody,
+} from "../../models/auth/auth.interface";
+import supabaseSdk from "../../sdk/supabase.sdk";
 
 async function register(requestBody: RegisterRequestBody) {
-    logger.info("Inside register service");
+  const existingUser = await supabaseSdk.getUserByPhoneNumber(
+    requestBody.phone_number
+  );
+  logger.info("Existing user: " + JSON.stringify(existingUser));
 
-    const response = await supabaseSdk.signUpWithPhoneNumber(requestBody.phone_number, requestBody.password);
+  if (
+    Array.isArray(existingUser) &&
+    existingUser.length > 0 &&
+    existingUser.some((user: any) => user.role === requestBody.role)
+  ) {
+    throw new NonRetryableException(
+      ApplicationStaticErrors.USER_ALREADY_EXISTS
+    );
+  }
 
-    return response;
+  logger.info("Signing up with phone number: " + requestBody.phone_number);
+
+  const userSignUpSdkResponse = await supabaseSdk.signUpWithPhoneNumber(
+    requestBody.phone_number,
+    requestBody.password
+  );
+
+  logger.info(
+    "User sign-up response: " + JSON.stringify(userSignUpSdkResponse)
+  );
+
+  if (!userSignUpSdkResponse?.user) {
+    throw new NonRetryableException(
+      ApplicationStaticErrors.SOMETHING_WENT_WRONG
+    );
+  }
+
+  const response = await supabaseSdk.addUser(
+    requestBody,
+    userSignUpSdkResponse.user.id
+  );
+  return response;
 }
 
-export default { register };
+async function verify(requestBody: VerifyRequestBody) {
+  const response = await supabaseSdk.verifyPhoneNumber(
+    requestBody.phone_number,
+    requestBody.code
+  );
+
+  return response;
+}
+
+async function logout(tokenObject: any) {
+  const data: any = await supabaseSdk.validateToken(tokenObject);
+  if (!data) {
+    throw new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED);
+  }
+  await supabaseSdk.logoutUser();
+}
+
+async function login(requestBody: LoginRequestBody) {
+  const response = await supabaseSdk.loginWithPhoneNumber(
+    requestBody.phone_number
+  );
+
+  return response;
+}
+
+async function getLoginStatus(access_token: string) {
+  const response = await supabaseSdk.getLoginStatus(access_token);
+  return response;
+}
+
+export default { register, verify, logout, getLoginStatus, login };
