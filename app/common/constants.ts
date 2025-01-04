@@ -13,4 +13,10 @@ const REGEX = {
   PHONE_NUMBER: /^\+91[6-9]\d{9}$/u,
 };
 
-export { HTTP_STATUS, REGEX };
+const CORS_OPTIONS = {
+  origin: "*",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  optionsSuccessStatus: 204,
+};
+
+export { HTTP_STATUS, REGEX, CORS_OPTIONS };

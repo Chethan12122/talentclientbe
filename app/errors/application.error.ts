@@ -8,11 +8,11 @@ export const ApplicationDynamicErrors = {
   },
   SDK_API_ERROR: (name: string, status: number, code: string) => {
     return {
-      errorCode: "TDD-101",
+      errorCode: `TDD-101-` + code,
       statusCode: status,
-      description: `SDK API Error -> ${name} -> ${status} -> ${code}`,
+      description: name,
     };
-  }
+  },
 };
 
 export const ApplicationStaticErrors = {
@@ -45,6 +45,11 @@ export const ApplicationStaticErrors = {
     errorCode: "TDS-105",
     statusCode: 400,
     description: "User already exists. Please login",
+  },
+  INVALID_SEASON_REQUEST: {
+    errorCode: "TDS-106",
+    statusCode: 400,
+    description: "Invalid season request",
   },
 };
 

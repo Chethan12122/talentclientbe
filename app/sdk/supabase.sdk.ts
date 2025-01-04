@@ -13,7 +13,7 @@ async function signUpWithPhoneNumber(phone_number: string, password: string) {
   if (error) {
     throw new NonRetryableException(
       ApplicationDynamicErrors.SDK_API_ERROR(
-        error.name,
+        error.message,
         error.status || 500,
         error.code || ""
       )
@@ -36,7 +36,11 @@ async function addUser(registerBody: RegisterRequestBody, userId: string) {
 
   if (error) {
     throw new NonRetryableException(
-      ApplicationDynamicErrors.SDK_API_ERROR(error.name, 500, error.code || "")
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
     );
   }
 
@@ -130,7 +134,11 @@ async function getUserByPhoneNumberAndRole(phone_number: string, role: string) {
 
   if (error) {
     throw new NonRetryableException(
-      ApplicationDynamicErrors.SDK_API_ERROR(error.name, 500, error.code || "")
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
     );
   }
 
@@ -146,7 +154,11 @@ async function getUserByPhoneNumber(phone_number: string) {
 
   if (error) {
     throw new NonRetryableException(
-      ApplicationDynamicErrors.SDK_API_ERROR(error.name, 500, error.code || "")
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
     );
   }
 
