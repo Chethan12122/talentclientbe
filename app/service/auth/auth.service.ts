@@ -74,9 +74,9 @@ async function login(requestBody: LoginRequestBody) {
   return response;
 }
 
-async function getLoginStatus(access_token: string) {
-  const response = await supabaseSdk.getLoginStatus(access_token);
+async function verifyToken(access_token: string) {
+  const response = await supabaseSdk.verifyToken(access_token);
   return response;
 }
 
-export default { register, verify, logout, getLoginStatus, login };
+export default { register, verify, logout, verifyToken, login };

@@ -76,7 +76,7 @@ export async function logout(
   }
 }
 
-export async function getLoginStatus(
+export async function verifyToken(
   req: Request,
   res: Response,
   next: NextFunction
@@ -85,13 +85,11 @@ export async function getLoginStatus(
     const access_token: string = req.headers.authorization?.split(" ")[1] || "";
     if (!access_token)
       throw new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED);
-    const response = await service.getLoginStatus(access_token);
+    const response = await service.verifyToken(access_token);
     if (!response)
       throw new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED);
-    res.json({
-      data: response,
-      message: "User logged in successfully",
-    });
+    
+    next();
   } catch (error) {
     logger.error("Error inside Get Login Status controller" + error);
     next(new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED));

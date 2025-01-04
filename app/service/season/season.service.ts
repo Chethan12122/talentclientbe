@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SeasonRequest } from "../../models/season/season.interface";
 import supabaseSdk from "../../sdk/season/supabase.season.sdk";
 
 async function createOrUpdate(seasonRequest: SeasonRequest) {
   const season_name = computeSeasonName(seasonRequest.start_date);
   const existingSeason = await supabaseSdk.getSeasonByName(season_name);
-  let response: object = {};
+  let response: any;
   if (existingSeason) {
     response = await supabaseSdk.updateSeason(
       seasonRequest,

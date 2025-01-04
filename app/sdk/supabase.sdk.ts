@@ -111,7 +111,7 @@ async function validateToken(tokenObject: any) {
   return sessionData;
 }
 
-async function getLoginStatus(token: string) {
+async function verifyToken(token: string) {
   const { data, error } = await supabase.auth.getUser(token);
   if (error) {
     throw new NonRetryableException(
@@ -170,7 +170,7 @@ export default {
   verifyPhoneNumber,
   logoutUser,
   validateToken,
-  getLoginStatus,
+  verifyToken,
   loginWithPhoneNumber,
   addUser,
   getUserByPhoneNumberAndRole,
