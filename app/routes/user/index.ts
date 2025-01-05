@@ -7,7 +7,7 @@ const router = express.Router({});
 router.route("/").get(verifyToken, getAllUsers).all(methodNotAllowed);
 
 router
-  .route("/:user_id")
+  .route("/:id")
   .get(verifyToken, getUserById)
   //   .put(verifyToken, validateUserUpdateRequest, updateUser) :- to be added
   .all(methodNotAllowed);

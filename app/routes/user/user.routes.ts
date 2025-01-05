@@ -25,7 +25,11 @@ export async function getUserById(
   next: NextFunction
 ): Promise<void> {
   try {
-    const response = await userService.getUserById(req.params.user_id);
+    const filterType = req.query.type;
+    const response = await userService.getUserById(
+      req.params.id,
+      filterType as string
+    );
     res.json({
       data: response,
       message: "User fetched successfully",

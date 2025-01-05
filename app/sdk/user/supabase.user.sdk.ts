@@ -18,11 +18,8 @@ async function getAllUsers() {
   return data;
 }
 
-async function getUserById(user_id: string) {
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("user_id", user_id);
+async function getUserById(id: string, type: string) {
+  const { data, error } = await supabase.from("users").select("*").eq(type, id);
 
   if (error) {
     throw new NonRetryableException(

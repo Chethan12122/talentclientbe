@@ -5,8 +5,8 @@ async function getAllUsers() {
   return response;
 }
 
-async function getUserById(user_id: string) {
-  const response = await supabaseUserSdk.getUserById(user_id);
+async function getUserById(id: string, type: string) {
+  const response = await supabaseUserSdk.getUserById(id, type);
   return response;
 }
 
