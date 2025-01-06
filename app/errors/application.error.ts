@@ -51,5 +51,10 @@ export const ApplicationStaticErrors = {
     statusCode: 400,
     description: "Invalid season request",
   },
+  INVALID_TEAM_REQUEST: {
+    errorCode: "TDS-107",
+    statusCode: 400,
+    description: "Invalid team request",
+  },
 };
 

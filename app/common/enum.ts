@@ -5,3 +5,8 @@ export enum Role {
   Admin = "ADMIN",
   SuperAdmin = "SUPER ADMIN",
 }
+
+export enum TEAM_TYPE {
+  HIGH_PERFORMANCE = "HIGH_PERFORMANCE",
+  DEVELOPMENT = "DEVELOPMENT",
+}
