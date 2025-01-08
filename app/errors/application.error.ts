@@ -56,5 +56,10 @@ export const ApplicationStaticErrors = {
     statusCode: 400,
     description: "Invalid team request",
   },
+  INVALID_GAME_REQUEST: {
+    errorCode: "TDS-108",
+    statusCode: 400,
+    description: "Invalid game request",
+  },
 };
 
