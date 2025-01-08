@@ -26,4 +26,29 @@ function validateGameRequest(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export { validateGameRequest };
+const gameCategoryCreateSchema = z.object({
+  game_id: z.string().min(1),
+  category_name: z
+    .string()
+    .min(1)
+    .transform((value) => value.toUpperCase()),
+});
+
+function validateGameCategoryRequest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    logger.info(JSON.stringify(req.body));
+    req.body = gameCategoryCreateSchema.parse(req.body);
+    next();
+  } catch (error: any) {
+    logger.error(error.message);
+    throw new NonRetryableException(
+      ApplicationStaticErrors.INVALID_GAME_CATEGORY_REQUEST
+    );
+  }
+}
+
+export { validateGameRequest, validateGameCategoryRequest };

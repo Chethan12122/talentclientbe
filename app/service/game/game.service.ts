@@ -1,4 +1,7 @@
-import { GameRequest } from "../../models/game/game.interface";
+import {
+  GameCategoryRequest,
+  GameRequest,
+} from "../../models/game/game.interface";
 import supabaseGameSdk from "../../sdk/game/supabase.game.sdk";
 
 async function createGame(gameRequest: GameRequest) {
@@ -21,4 +24,34 @@ async function deleteGameById(game_id: string) {
   return response;
 }
 
-export default { createGame, getAllGames, getGameById, deleteGameById };
+async function createGameCategory(gameCategoryRequest: GameCategoryRequest) {
+  const response =
+    await supabaseGameSdk.createGameCategory(gameCategoryRequest);
+  return response;
+}
+
+async function getGameCategoryById(game_id: string) {
+  const response = await supabaseGameSdk.getGameCategoryById(game_id);
+  return response;
+}
+
+async function deleteGameCategoryById(game_id: string) {
+  const response = await supabaseGameSdk.deleteGameCategoryById(game_id);
+  return response;
+}
+
+async function getAllGameCategories() {
+  const response = await supabaseGameSdk.getAllGameCategories();
+  return response;
+}
+
+export default {
+  createGame,
+  getAllGames,
+  getGameById,
+  deleteGameById,
+  createGameCategory,
+  getGameCategoryById,
+  deleteGameCategoryById,
+  getAllGameCategories,
+};

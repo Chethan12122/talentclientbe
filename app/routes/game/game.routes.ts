@@ -47,7 +47,7 @@ export async function getGameById(
       message: "Game fetched successfully",
     });
   } catch (error) {
-    logger.error("Error inside game get by name controller");
+    logger.error("Error inside game get by id controller");
     next(error);
   }
 }
@@ -64,7 +64,7 @@ export async function deleteGameById(
       message: "Game deleted successfully",
     });
   } catch (error) {
-    logger.error("Error inside game delete by name controller");
+    logger.error("Error inside game delete by id controller");
     next(error);
   }
 }

@@ -61,5 +61,9 @@ export const ApplicationStaticErrors = {
     statusCode: 400,
     description: "Invalid game request",
   },
+  INVALID_GAME_CATEGORY_REQUEST: {
+    errorCode: "TDS-109",
+    statusCode: 400,
+    description: "Invalid game category request",
+  },
 };
-
