@@ -12,6 +12,7 @@ export async function create(
     res.json({
       message:
         "Team created/updated successfully with team = " + response.team_name,
+        data: response
     });
   } catch (error) {
     logger.error("Error inside team create controller");
@@ -28,7 +29,7 @@ export async function update(
     await teamService.update(req.params.team_id, req.body);
     res.json({
       message:
-        "Team created/updated successfully with teamId = " + req.params.team_id,
+        "Team updated successfully" + req.params.team_id,
     });
   } catch (error) {
     logger.error("Error inside team update controller");

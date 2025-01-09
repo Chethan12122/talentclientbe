@@ -11,8 +11,8 @@ export async function create(
     const response = await seasonService.createOrUpdate(req.body);
     res.json({
       message:
-        "Season created/updated successfully with season = " +
-        response.season_name,
+        "Season created/updated successfully",
+        data: response
     });
   } catch (error) {
     logger.error("Error inside season create controller");

@@ -10,7 +10,7 @@ export async function create(
     const response = await gameService.createGame(req.body);
     res.json({
       message: "Game created successfully !!",
-      game_id: response.game_id,
+      data: response,
     });
   } catch (error) {
     logger.error("Error inside game create controller");
