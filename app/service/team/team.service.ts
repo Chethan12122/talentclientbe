@@ -1,9 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { TEAM_TYPE } from "../../common/enum";
 import { TeamRequest } from "../../models/team/team.interface";
 import supabaseSdk from "../../sdk/team/supabase.team.sdk";
 
 async function create(teamRequest: TeamRequest) {
-  const response = await supabaseSdk.createTeam(teamRequest);
+  const updatedTeamRequest: TeamRequest[] = [
+    {
+      institute_id: teamRequest.institute_id,
+      team_type: TEAM_TYPE.HIGH_PERFORMANCE,
+    },
+    {
+      institute_id: teamRequest.institute_id,
+      team_type: TEAM_TYPE.DEVELOPMENT,
+    },
+  ];
+  const response = await supabaseSdk.createTeam(updatedTeamRequest);
   return response;
 }
 

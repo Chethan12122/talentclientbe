@@ -11,7 +11,7 @@ export async function create(
     const response = await teamService.create(req.body);
     res.json({
       message:
-        "Team created/updated successfully with team = " + response.team_name,
+        "Team created successfully",
         data: response
     });
   } catch (error) {

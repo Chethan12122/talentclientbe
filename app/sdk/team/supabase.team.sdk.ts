@@ -4,17 +4,10 @@ import { ApplicationDynamicErrors } from "../../errors/application.error";
 import { NonRetryableException } from "../../errors/base.error";
 import { TeamRequest } from "../../models/team/team.interface";
 
-async function createTeam(teamRequest: TeamRequest) {
+async function createTeam(teamRequests: TeamRequest[]) {
   const { data, error } = await supabase
     .from("teams")
-    .insert([
-      {
-        team_name: teamRequest.team_name,
-        institute_name: teamRequest.institute_name,
-        team_type: teamRequest.team_type,
-        team_venue: teamRequest.team_venue,
-      },
-    ])
+    .insert(teamRequests)
     .select();
 
   if (error) {
@@ -27,7 +20,7 @@ async function createTeam(teamRequest: TeamRequest) {
     );
   }
 
-  return data[0];
+  return data;
 }
 
 async function getAllTeams(filter_team_type: string) {
@@ -105,10 +98,8 @@ async function updateTeam(id: string, teamRequest: TeamRequest) {
     .from("teams")
     .update([
       {
-        team_name: teamRequest.team_name,
-        institute_name: teamRequest.institute_name,
+        institute_id: teamRequest.institute_id,
         team_type: teamRequest.team_type,
-        team_venue: teamRequest.team_venue,
       },
     ])
     .eq("team_id", id);

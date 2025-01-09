@@ -5,13 +5,9 @@ import { NonRetryableException } from "../errors/base.error";
 import { ApplicationStaticErrors } from "../errors/application.error";
 import { z } from "zod";
 import { logger } from "../common/logger";
-import { TEAM_TYPE } from "../common/enum";
 
 const teamCreateSchema = z.object({
-  team_name: z.string().min(1),
-  institute_name: z.string().min(1),
-  team_type: z.enum(Object.values(TEAM_TYPE) as [string, ...string[]]),
-  team_venue: z.string().min(1),
+  institute_id: z.string().min(1),
 });
 
 function validateTeamRequest(req: Request, res: Response, next: NextFunction) {
