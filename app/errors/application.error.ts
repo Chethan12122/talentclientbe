@@ -66,4 +66,9 @@ export const ApplicationStaticErrors = {
     statusCode: 400,
     description: "Invalid game category request",
   },
+  INVALID_INSTITUTE_REQUEST: {
+    errorCode: "TDS-110",
+    statusCode: 400,
+    description: "Invalid institute request",
+  },
 };
