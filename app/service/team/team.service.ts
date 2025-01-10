@@ -2,6 +2,7 @@
 import { TEAM_TYPE } from "../../common/enum";
 import { TeamRequest } from "../../models/team/team.interface";
 import supabaseSdk from "../../sdk/team/supabase.team.sdk";
+import instituteService from "../institute/institute.service";
 
 async function create(teamRequest: TeamRequest) {
   const updatedTeamRequest: TeamRequest[] = [
@@ -19,8 +20,16 @@ async function create(teamRequest: TeamRequest) {
 }
 
 async function getAllTeams(filter_team_type: string) {
-  const response = await supabaseSdk.getAllTeams(filter_team_type);
-  return response;
+  const allTeams = await supabaseSdk.getAllTeams(filter_team_type);
+  const teamsWithDetails = await Promise.all(
+    allTeams.map(async (team) => {
+      const instituteDetails = await instituteService.getInstituteById(
+        team.institute_id
+      );
+      return { ...team, instituteDetails };
+    })
+  );
+  return teamsWithDetails;
 }
 
 async function getTeamById(teamId: string) {
