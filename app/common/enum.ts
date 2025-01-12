@@ -15,3 +15,9 @@ export enum GAME_CATEGORY_TYPE {
   SINGLE = "SINGLE",
   TEAM = "TEAM",
 }
+
+export enum FIXTURE_STATUS {
+  UPCOMING = "UPCOMING",
+  LIVE = "LIVE",
+  COMPLETED = "COMPLETED",
+}

@@ -10,9 +10,24 @@ async function getUserById(id: string, type: string) {
   return response;
 }
 
+async function getAllUsersAssociatedWithGameCategoryAndGender(
+  game_category_id: string
+) {
+  const allUsers = await supabaseUserSdk.getAllUsers();
+  const usersAssociatedWithGameCategory = allUsers.filter((user) => {
+    return user.game_categories.includes(game_category_id);
+  });
+
+  return usersAssociatedWithGameCategory || [];
+}
+
 // async function updateUser(user_id: string, requestBody: any) {
 //   const response = await supabaseUserSdk.updateUser(user_id, requestBody);
 //   return response;
 // }
 
-export default { getAllUsers, getUserById };
+export default {
+  getAllUsers,
+  getUserById,
+  getAllUsersAssociatedWithGameCategoryAndGender,
+};
