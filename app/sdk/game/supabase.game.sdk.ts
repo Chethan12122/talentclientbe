@@ -124,8 +124,14 @@ async function deleteGameCategoryById(gameCategoryId: string) {
   return data;
 }
 
-async function getAllGameCategories() {
-  const { data, error } = await supabase.from("game_categories").select("*");
+async function getAllGameCategories(game_id: string) {
+  let query = supabase.from("game_categories").select("*");
+
+  if (game_id) {
+    query = query.eq("game_id", game_id);
+  }
+
+  const { data, error } = await query;
   if (error) {
     throw new NonRetryableException(
       ApplicationDynamicErrors.SDK_API_ERROR(
