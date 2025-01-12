@@ -5,6 +5,7 @@ import { NonRetryableException } from "../errors/base.error";
 import { ApplicationStaticErrors } from "../errors/application.error";
 import { z } from "zod";
 import { logger } from "../common/logger";
+import { GAME_CATEGORY_TYPE } from "../common/enum";
 
 const gameCreateSchema = z.object({
   game_name: z
@@ -32,6 +33,7 @@ const gameCategoryCreateSchema = z.object({
     .string()
     .min(1)
     .transform((value) => value.toUpperCase()),
+  type: z.enum(Object.values(GAME_CATEGORY_TYPE) as [string, ...string[]]),
 });
 
 function validateGameCategoryRequest(
