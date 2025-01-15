@@ -28,6 +28,7 @@ export interface Athlete {
   updated_at: string;
   game_categories: string[];
   team_type: string;
+  team_id: string;
 }
 
 export interface Team {
@@ -39,6 +40,15 @@ export interface Team {
 export interface Institute {
   institute_id: string;
   teams: Team[]; // Each institute has teams, each containing athletes
+}
+
+export interface ScheduledFixture {
+  fixture_date: string;
+  competing_institutes: {
+    home_institute: string;
+    away_institute: string;
+  };
+  venue: string;
 }
 
 export interface Match {
@@ -54,10 +64,9 @@ export interface Match {
 }
 
 export interface Fixture {
-  institute1: string;
-  institute2: string;
-  venue: string;
-  matches: Match[]; // Array of matches between teams
+  round: number;
+  date: string;
+  matches: string[];
 }
 
 export interface FixtureRequest {
@@ -65,6 +74,7 @@ export interface FixtureRequest {
   season_id: string; // Season of the fixture
   venue: string; // Venue of the fixture
   status: FIXTURE_STATUS; // Current status of the fixture
+  fixture_date: string;
 }
 
 export interface ParticipantRequest {

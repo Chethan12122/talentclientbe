@@ -22,14 +22,15 @@ export async function generateFixtures(
   }
 }
 
-export async function getFixturesForCategory(
+export async function getFixturesForCategoryAndSeason(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const response = await fixtureService.getFixturesForCategory(
-      req.query.game_category_id as string
+    const response = await fixtureService.getFixturesForCategoryAndSeason(
+      req.query.game_category_id as string,
+      req.query.season_id as string
     );
     res.json({
       message: "Fixtures fetched successfully",

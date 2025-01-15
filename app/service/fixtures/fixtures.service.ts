@@ -1,19 +1,21 @@
 /* eslint-disable require-await */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-return-await */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FIXTURE_STATUS, TEAM_TYPE } from "../../common/enum";
 import {
   Athlete,
-  Fixture,
   FixtureRequest,
   Institute,
-  Match,
   ParticipantRequest,
+  ScheduledFixture,
+  Team,
   User,
 } from "../../models/fixtures/fixtures.interface";
 import gameSupabase from "../../sdk/game/supabase.game.sdk";
 import supabaseTeamSdk from "../../sdk/team/supabase.team.sdk";
 import userService from "../user/user.service";
+import seasonService from "../season/season.service";
 import fixturesSupabase from "../../sdk/fixtures/supabase.fixtures.sdk";
 
 async function generateFixtures(game_category_id: string, season_id: string) {
@@ -22,23 +24,87 @@ async function generateFixtures(game_category_id: string, season_id: string) {
   if (!gameCategoryInfo) {
     throw new Error(`Game category with ID ${game_category_id} not found.`);
   }
- const usersAssociated =
+
+  const usersAssociated =
     await userService.getAllUsersAssociatedWithGameCategoryAndGender(
       game_category_id
     );
+
   const usersWithTeamType = await mapUsersToTeamType(usersAssociated);
-
   const institutes = transformToInstituteStructure(usersWithTeamType);
-  
-  const fixtures = createFixtureList(institutes);
-  
-  await saveFixturesAndParticipants(fixtures, game_category_id, season_id);
+  const instituteMap = convertToInstituteMap(institutes);
 
-  return fixtures;
+  const seasonInfo = await seasonService.getSeasonById(season_id);
+  const scheduledFixtures = createInstituteFixtures(institutes, seasonInfo);
+
+  await createFixturesAndParticipants(
+    scheduledFixtures,
+    game_category_id,
+    season_id,
+    instituteMap
+  );
+
+  return scheduledFixtures;
+}
+
+function convertToInstituteMap(institutes: Institute[]): Map<string, Team[]> {
+  return institutes.reduce((map, institute) => {
+    map.set(institute.institute_id, institute.teams);
+    return map;
+  }, new Map<string, Team[]>());
+}
+
+async function createFixturesAndParticipants(
+  scheduledFixtures: ScheduledFixture[],
+  game_category_id: string,
+  season_id: string,
+  instituteMap: Map<string, Team[]>
+) {
+  for (const fixture of scheduledFixtures) {
+    const { fixture_date, competing_institutes, venue } = fixture;
+    const { home_institute, away_institute } = competing_institutes;
+
+    for (const team_type of Object.values(TEAM_TYPE)) {
+      const fixtureRequest: FixtureRequest = {
+        fixture_date,
+        category_id: game_category_id,
+        season_id,
+        venue,
+        status: FIXTURE_STATUS.UPCOMING,
+      };
+
+      const fixtureCreateResponse = await createFixtures(fixtureRequest);
+
+      const participants = [
+        ...getParticipantsForInstitute(home_institute, team_type, instituteMap),
+        ...getParticipantsForInstitute(away_institute, team_type, instituteMap),
+      ];
+
+      await Promise.all(
+        participants.map((participant) =>
+          createParticipant({
+            fixture_id: fixtureCreateResponse.fixture_id,
+            team_id: participant.team_id,
+            user_id: participant.user_id,
+          })
+        )
+      );
+    }
+  }
+}
+
+function getParticipantsForInstitute(
+  institute_id: string,
+  team_type: string,
+  instituteMap: Map<string, Team[]>
+): Athlete[] {
+  const team = instituteMap
+    .get(institute_id)
+    ?.find((t) => t.team_type === team_type);
+  return team?.athletes || [];
 }
 
 async function mapUsersToTeamType(users: User[]): Promise<User[]> {
-  // Await the resolution of all promises in the map function
   return Promise.all(
     users.map(async (user) => {
       const team = await supabaseTeamSdk.getTeamById(user.team_id);
@@ -79,143 +145,99 @@ function transformToInstituteStructure(users: User[]): Institute[] {
   }));
 }
 
-function createFixtureList(institutes: Institute[]): Fixture[] {
-  const fixtures: Fixture[] = [];
+function generateInstituteFixtures(
+  institutes: Institute[]
+): [string, string][][] {
+  const fixtures: [string, string][][] = [];
+  const rotatedInstitutes = [...institutes];
 
-  for (let i = 0; i < institutes.length; i++) {
-    for (let j = i + 1; j < institutes.length; j++) {
-      const institute1 = institutes[i];
-      const institute2 = institutes[j];
+  if (rotatedInstitutes.length % 2 !== 0) {
+    rotatedInstitutes.push({ institute_id: "BYE", teams: [] });
+  }
 
-      const venue = selectVenue(institutes, institute1, institute2);
+  const totalRounds = rotatedInstitutes.length - 1;
+  const halfSize = rotatedInstitutes.length / 2;
 
-      const matches = generateMatches(institute1, institute2);
-      if (matches.length > 0) {
-        fixtures.push({
-          institute1: institute1.institute_id,
-          institute2: institute2.institute_id,
-          venue,
-          matches,
-        });
+  for (let round = 0; round < totalRounds; round++) {
+    const roundFixtures: [string, string][] = [];
+
+    for (let i = 0; i < halfSize; i++) {
+      const home = rotatedInstitutes[i].institute_id;
+      const away =
+        rotatedInstitutes[rotatedInstitutes.length - 1 - i].institute_id;
+
+      if (home !== "BYE" && away !== "BYE") {
+        roundFixtures.push([home, away]);
       }
     }
+
+    fixtures.push(roundFixtures);
+
+    const last = rotatedInstitutes.pop()!;
+    rotatedInstitutes.splice(1, 0, last);
   }
 
   return fixtures;
 }
 
-function selectVenue(
-  institutes: Institute[],
-  inst1: Institute,
-  inst2: Institute
-): string {
-  if (institutes.length > 2) {
-    const otherInstitute = institutes.find(
-      (inst) =>
-        inst.institute_id !== inst1.institute_id &&
-        inst.institute_id !== inst2.institute_id
-    );
-    return otherInstitute?.institute_id || inst1.institute_id;
-  }
-  return Math.random() > 0.5 ? inst1.institute_id : inst2.institute_id;
-}
+function scheduleInstituteFixturesWithVenue(
+  fixtures: [string, string][][],
+  seasonDetails: any
+): ScheduledFixture[] {
+  const scheduledFixtures: ScheduledFixture[] = [];
+  let currentDate = new Date(seasonDetails.start_date); // Use `let` for modifiable variable
+  const breakStart = new Date(seasonDetails.break_start_date);
+  const breakEnd = new Date(seasonDetails.break_end_date);
 
-function generateMatches(inst1: Institute, inst2: Institute): Match[] {
-  const matches: Match[] = [];
+  const allInstitutes = fixtures
+    .flat()
+    .map(([home, away]) => [home, away])
+    .flat()
+    .filter(
+      (institute, index, self) =>
+        institute !== "BYE" && self.indexOf(institute) === index
+    ); // Unique non-BYE institutes
 
-  inst1.teams.forEach((team1) => {
-    inst2.teams.forEach((team2) => {
-      if (team1.team_type === team2.team_type) {
-        matches.push({
-          team1: { team_id: team1.team_id, athletes: team1.athletes },
-          team2: { team_id: team2.team_id, athletes: team2.athletes },
-          team_type: team1.team_type as TEAM_TYPE,
-        });
-      }
-    });
-  });
+  fixtures.forEach((roundFixtures) => {
+    // Skip dates during the break period
+    while (currentDate >= breakStart && currentDate <= breakEnd) {
+      currentDate = new Date(currentDate.setDate(currentDate.getDate() + 7)); // Explicitly update `currentDate`
+    }
 
-  return matches;
-}
+    roundFixtures.forEach(([home, away]) => {
+      // Find all eligible venues (excluding home and away institutes)
+      const availableVenues = allInstitutes.filter(
+        (institute) => institute !== home && institute !== away
+      );
 
-async function saveFixturesAndParticipants(
-  fixtures: Fixture[],
-  game_category_id: string,
-  season_id: string
-) {
-  const convertedFixtures = fixtures
-    .map((fixture) => {
-      const { institute1, institute2, venue, matches } = fixture;
+      // Rotate through available venues to maintain fairness
+      const venueIndex = scheduledFixtures.length % availableVenues.length;
+      const venue = availableVenues[venueIndex];
 
-      return matches.map((match) => {
-        const team1 =
-          match.team_type === "HIGH_PERFORMANCE" ? match.team1 : null;
-        const team2 =
-          match.team_type === "HIGH_PERFORMANCE" ? match.team2 : null;
-
-        return {
-          institute1,
-          institute2,
-          venue,
-          match: {
-            team1: team1 ?? match.team1,
-            team2: team2 ?? match.team2,
-            team_type: match.team_type,
-          },
-        };
+      scheduledFixtures.push({
+        fixture_date: currentDate.toISOString().split("T")[0],
+        competing_institutes: {
+          home_institute: home,
+          away_institute: away,
+        },
+        venue, // Properly assigned venue
       });
-    })
-    .flat();
-  for (const fixture of convertedFixtures) {
-    const fixtureRequest: FixtureRequest = {
-      category_id: game_category_id,
-      season_id,
-      venue: fixture.venue,
-      status: FIXTURE_STATUS.UPCOMING,
-    };
+    });
 
-    const fixtureResponse = await createFixtures(fixtureRequest);
-    const fixtureId = fixtureResponse?.fixture_id;
+    // Move to the next fixture date (7 days later)
+    currentDate = new Date(currentDate.setDate(currentDate.getDate() + 7)); // Explicitly update `currentDate`
+  });
 
-    if (!fixtureId) {
-      continue;
-    }
-
-    const participantRequests = generateParticipantRequests(
-      fixture.match,
-      fixtureId
-    );
-    for (const participantRequest of participantRequests) {
-      await createParticipant(participantRequest);
-    }
-  }
+  return scheduledFixtures;
 }
 
-function generateParticipantRequests(
-  match: Match,
-  fixtureId: string
-): ParticipantRequest[] {
-  const participantRequests: ParticipantRequest[] = [];
 
-  // Add participants from team1
-  match.team1.athletes.forEach((athlete) => {
-    participantRequests.push({
-      user_id: athlete.user_id,
-      fixture_id: fixtureId,
-      team_id: match.team1.team_id,
-    });
-  });
-
-  // Add participants from team2
-  match.team2.athletes.forEach((athlete) => {
-    participantRequests.push({
-      user_id: athlete.user_id,
-      fixture_id: fixtureId,
-      team_id: match.team2.team_id, // Corrected here
-    });
-  });
-
-  return participantRequests;
+function createInstituteFixtures(
+  institutes: Institute[],
+  seasonDetails: any
+): ScheduledFixture[] {
+  const fixtures = generateInstituteFixtures(institutes);
+  return scheduleInstituteFixturesWithVenue(fixtures, seasonDetails);
 }
 
 async function createFixtures(fixtureRequest: FixtureRequest) {
@@ -226,11 +248,13 @@ async function createParticipant(participantRequest: ParticipantRequest) {
   return await fixturesSupabase.createParticipant(participantRequest);
 }
 
-async function getFixturesForCategory(game_category_id: string) {
+async function getFixturesForCategoryAndSeason(
+  game_category_id: string,
+  season_id: string
+) {
   // Get fixtures for category
   const fixturesAssociatedWithCategory =
-    await fixturesSupabase.getFixturesForCategory(game_category_id);
-
+    await fixturesSupabase.getFixturesForCategory(game_category_id, season_id);
   // Fetch the participants for each fixture
   const fixturesWithParticipants = await Promise.all(
     fixturesAssociatedWithCategory.map(async (fixture) => {
@@ -247,4 +271,4 @@ async function getFixturesForCategory(game_category_id: string) {
   return fixturesWithParticipants;
 }
 
-export default { generateFixtures, getFixturesForCategory };
+export default { generateFixtures, getFixturesForCategoryAndSeason };

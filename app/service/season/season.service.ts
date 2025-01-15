@@ -33,4 +33,14 @@ async function getSeasonByName(season_name: string) {
   return response;
 }
 
-export default { createOrUpdate, getAllSeasons, getSeasonByName };
+async function getSeasonById(season_id: string) {
+  const response = await supabaseSdk.getSeasonById(season_id);
+  return response;
+}
+
+export default {
+  createOrUpdate,
+  getAllSeasons,
+  getSeasonByName,
+  getSeasonById,
+};

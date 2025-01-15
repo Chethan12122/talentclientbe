@@ -40,11 +40,12 @@ async function createParticipant(participantRequest: ParticipantRequest) {
   return data[0];
 }
 
-async function getFixturesForCategory(gameCategoryId: string) {
+async function getFixturesForCategory(gameCategoryId: string, seasonId: string) {
   const { data, error } = await supabase
     .from("fixtures")
     .select("*")
-    .eq("category_id", gameCategoryId);
+    .eq("category_id", gameCategoryId)
+    .eq("season_id", seasonId);
   if (error) {
     throw new NonRetryableException(
       ApplicationDynamicErrors.SDK_API_ERROR(

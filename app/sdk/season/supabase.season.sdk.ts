@@ -103,4 +103,30 @@ async function getAllSeasons() {
   return data;
 }
 
-export default { createSeason, getSeasonByName, updateSeason, getAllSeasons };
+async function getSeasonById(seasonId: string) {
+  const { data, error } = await supabase
+    .from("seasons")
+    .select("*")
+    .eq("season_id", seasonId)
+    .single();
+
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+
+  return data;
+}
+
+export default {
+  createSeason,
+  getSeasonByName,
+  updateSeason,
+  getAllSeasons,
+  getSeasonById,
+};

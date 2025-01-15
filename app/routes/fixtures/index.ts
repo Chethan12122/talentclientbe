@@ -1,6 +1,6 @@
 import express from "express";
 import { methodNotAllowed } from "../../common/utils/common.utils";
-import { generateFixtures, getFixturesForCategory } from "./fixtures.routes";
+import { generateFixtures, getFixturesForCategoryAndSeason } from "./fixtures.routes";
 import { verifyToken } from "../auth/auth.routes";
 const router = express.Router({});
 
@@ -11,7 +11,7 @@ router
 
 router
   .route("/")
-  .get(verifyToken, getFixturesForCategory)
+  .get(verifyToken, getFixturesForCategoryAndSeason)
   .all(methodNotAllowed);
 
 export default router;
