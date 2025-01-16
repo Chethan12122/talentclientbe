@@ -22,12 +22,21 @@ import gameService from "../game/game.service";
 import fixturesSupabase from "../../sdk/fixtures/supabase.fixtures.sdk";
 import { TeamResponse } from "../../models/team/team.interface";
 import { console } from "inspector";
-import {
-  InstituteResponse,
-} from "../../models/institute/institute.interface";
-import {
-  GameCategoryResponse,
-} from "../../models/game/game.interface";
+import { InstituteResponse } from "../../models/institute/institute.interface";
+import { GameCategoryResponse } from "../../models/game/game.interface";
+
+async function generateFixturesForGame(game_id: string, season_id: string) {
+  const gameCategories = await gameSupabase.getAllGameCategories(game_id);
+  let response: any[] = []; // Initialize the response array
+  for (const gameCategory of gameCategories) {
+    const fixtures = await generateFixtures(
+      gameCategory.category_id,
+      season_id
+    );
+    response = response.concat(fixtures);
+  }
+  return response;
+}
 
 async function generateFixtures(game_category_id: string, season_id: string) {
   const gameCategoryInfo =
@@ -41,6 +50,9 @@ async function generateFixtures(game_category_id: string, season_id: string) {
       game_category_id
     );
 
+  if (usersAssociated.length === 0) {
+    return [];
+  }
   const usersWithTeamType = await mapUsersToTeamType(usersAssociated);
   const institutes = transformToInstituteStructure(usersWithTeamType);
   const instituteMap = convertToInstituteMap(institutes);
@@ -285,36 +297,43 @@ function modifyFixtureResponse(
   instituteMap: Map<string, InstituteResponse>,
   gameCategoryMap: Map<string, GameCategoryResponse>
 ) {
-  fixturesWithParticipants.forEach((fixture: { participants: any[] , venue: string, category_id: string, category_details: any, venue_details: any}) => {
-    const participants = fixture.participants || [];
+  fixturesWithParticipants.forEach(
+    (fixture: {
+      participants: any[];
+      venue: string;
+      category_id: string;
+      category_details: any;
+      venue_details: any;
+    }) => {
+      const participants = fixture.participants || [];
 
-    participants.forEach(
-      (participant: { team_id: string; team_details: TeamResponse }) => {
-        const teamId = participant.team_id;
+      participants.forEach(
+        (participant: { team_id: string; team_details: TeamResponse }) => {
+          const teamId = participant.team_id;
 
-        if (teamMap.has(teamId)) {
-          participant.team_details = teamMap.get(teamId) as TeamResponse;
+          if (teamMap.has(teamId)) {
+            participant.team_details = teamMap.get(teamId) as TeamResponse;
+          }
         }
+      );
+
+      fixture.participants = participants;
+
+      const venue_id = fixture.venue;
+
+      if (instituteMap.has(venue_id)) {
+        fixture.venue_details = instituteMap.get(venue_id) as InstituteResponse;
       }
-    );
 
-    fixture.participants = participants;
+      const category_id = fixture.category_id;
 
-    const venue_id = fixture.venue;
-
-    if (instituteMap.has(venue_id)) {
-      fixture.venue_details = instituteMap.get(venue_id) as InstituteResponse;
+      if (gameCategoryMap.has(category_id)) {
+        fixture.category_details = gameCategoryMap.get(
+          category_id
+        ) as GameCategoryResponse;
+      }
     }
-
-    const category_id = fixture.category_id;
-
-    if (gameCategoryMap.has(category_id)) {
-      fixture.category_details = gameCategoryMap.get(
-        category_id
-      ) as GameCategoryResponse;
-    }
-
-  });
+  );
 
   return fixturesWithParticipants;
 }
@@ -323,7 +342,6 @@ async function getFixturesForCategoryAndSeason(
   game_category_id: string,
   season_id: string
 ) {
-
   //get all teams
   const allTeams = await teamService.getAllTeams("");
 
@@ -368,4 +386,32 @@ async function getFixturesForCategoryAndSeason(
   return fixturesWithParticipants;
 }
 
-export default { generateFixtures, getFixturesForCategoryAndSeason };
+async function getFixturesForGame(game_id: string, season_id: string) {
+  const gameCategories = await gameSupabase.getAllGameCategories(game_id);
+  let response: any[] = [];
+
+  for (const gameCategory of gameCategories) {
+    const fixtures = await getFixturesForCategoryAndSeason(
+      gameCategory.category_id,
+      season_id
+    );
+    response = response.concat(fixtures);
+  }
+
+  //sort it with fixture_date
+
+  response.sort((a: any, b: any) => {
+    return (
+      new Date(a.fixture_date).getTime() - new Date(b.fixture_date).getTime()
+    );
+  });
+
+  return response;
+}
+
+export default {
+  generateFixtures,
+  getFixturesForCategoryAndSeason,
+  generateFixturesForGame,
+  getFixturesForGame,
+};

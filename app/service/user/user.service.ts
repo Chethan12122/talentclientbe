@@ -15,6 +15,7 @@ async function getAllUsersAssociatedWithGameCategoryAndGender(
 ) {
   const allUsers = await supabaseUserSdk.getAllUsers();
   const usersAssociatedWithGameCategory = allUsers.filter((user) => {
+    if (!user.game_categories) return false;
     return user.game_categories.includes(game_category_id);
   });
 
