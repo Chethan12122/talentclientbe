@@ -10,6 +10,7 @@ import gameRouter from "./routes/game/index";
 import gameCategoryRouter from "./routes/game_category/index";
 import instituteRouter from "./routes/institute/index";
 import fixturesRouter from "./routes/fixtures/index";
+import scoresRouter from "./routes/score/index";
 import { CORS_OPTIONS } from "./common/constants";
 import cors from "cors";
 
@@ -29,6 +30,7 @@ app.use("/api/team", teamRouter);
 app.use("/api/game", gameRouter);
 app.use("/api/game_category", gameCategoryRouter);
 app.use("/api/fixtures", fixturesRouter);
+app.use("/api/scores", scoresRouter);
 
 // Error Handling Middleware
 app.use(genericHandler);

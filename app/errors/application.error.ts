@@ -71,4 +71,9 @@ export const ApplicationStaticErrors = {
     statusCode: 400,
     description: "Invalid institute request",
   },
+  INVALID_SCORE_REQUEST: {
+    errorCode: "TDS-111",
+    statusCode: 400,
+    description: "Invalid score request",
+  },
 };
