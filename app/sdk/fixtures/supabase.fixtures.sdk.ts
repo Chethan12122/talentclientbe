@@ -72,7 +72,26 @@ async function getParticipantsForFixture(fixtureId: string) {
       )
     );
   }
-  return data;
+  if (!data || data.length === 0) {
+    throw new Error("No participants found for the given fixture.");
+  }
+
+  // Extract unique teams and their participants
+  const uniqueTeams: Record<string, any> = {};
+
+  data.forEach((participant) => {
+    if (!uniqueTeams[participant.team_id] && Object.keys(uniqueTeams).length < 2) {
+      uniqueTeams[participant.team_id] = {
+        participant_id: participant.participant_id,
+        fixture_id: participant.fixture_id,
+        team_id: participant.team_id,
+        accepted: participant.accepted,
+      };
+    }
+  });
+
+  // Return only the two team participants as an array
+  return Object.values(uniqueTeams);
 }
 
 export default {

@@ -16,7 +16,18 @@ import gameSupabase from "../../sdk/game/supabase.game.sdk";
 import supabaseTeamSdk from "../../sdk/team/supabase.team.sdk";
 import userService from "../user/user.service";
 import seasonService from "../season/season.service";
+import instituteService from "../institute/institute.service";
+import teamService from "../team/team.service";
+import gameService from "../game/game.service";
 import fixturesSupabase from "../../sdk/fixtures/supabase.fixtures.sdk";
+import { TeamResponse } from "../../models/team/team.interface";
+import { console } from "inspector";
+import {
+  InstituteResponse,
+} from "../../models/institute/institute.interface";
+import {
+  GameCategoryResponse,
+} from "../../models/game/game.interface";
 
 async function generateFixtures(game_category_id: string, season_id: string) {
   const gameCategoryInfo =
@@ -231,7 +242,6 @@ function scheduleInstituteFixturesWithVenue(
   return scheduledFixtures;
 }
 
-
 function createInstituteFixtures(
   institutes: Institute[],
   seasonDetails: any
@@ -248,15 +258,95 @@ async function createParticipant(participantRequest: ParticipantRequest) {
   return await fixturesSupabase.createParticipant(participantRequest);
 }
 
+function convertTeamsToTeamMap(teams: TeamResponse[]) {
+  //create a map of <team_id, team>
+  const teamMap = new Map<string, TeamResponse>();
+  teams.forEach((team) => teamMap.set(team.team_id, team));
+  return teamMap;
+}
+
+function convertToInstituteDetailsMap(institutes: InstituteResponse[]) {
+  return institutes.reduce((map, institute) => {
+    map.set(institute.institute_id, institute);
+    return map;
+  }, new Map<string, InstituteResponse>());
+}
+
+function convertGameCategoryToMap(gameCategories: GameCategoryResponse[]) {
+  return gameCategories.reduce((map, gameCategory) => {
+    map.set(gameCategory.category_id, gameCategory);
+    return map;
+  }, new Map<string, GameCategoryResponse>());
+}
+
+function modifyFixtureResponse(
+  fixturesWithParticipants: any[],
+  teamMap: Map<string, TeamResponse>,
+  instituteMap: Map<string, InstituteResponse>,
+  gameCategoryMap: Map<string, GameCategoryResponse>
+) {
+  fixturesWithParticipants.forEach((fixture: { participants: any[] , venue: string, category_id: string, category_details: any, venue_details: any}) => {
+    const participants = fixture.participants || [];
+
+    participants.forEach(
+      (participant: { team_id: string; team_details: TeamResponse }) => {
+        const teamId = participant.team_id;
+
+        if (teamMap.has(teamId)) {
+          participant.team_details = teamMap.get(teamId) as TeamResponse;
+        }
+      }
+    );
+
+    fixture.participants = participants;
+
+    const venue_id = fixture.venue;
+
+    if (instituteMap.has(venue_id)) {
+      fixture.venue_details = instituteMap.get(venue_id) as InstituteResponse;
+    }
+
+    const category_id = fixture.category_id;
+
+    if (gameCategoryMap.has(category_id)) {
+      fixture.category_details = gameCategoryMap.get(
+        category_id
+      ) as GameCategoryResponse;
+    }
+
+  });
+
+  return fixturesWithParticipants;
+}
+
 async function getFixturesForCategoryAndSeason(
   game_category_id: string,
   season_id: string
 ) {
+
+  //get all teams
+  const allTeams = await teamService.getAllTeams("");
+
+  const teamMap: Map<string, TeamResponse> = convertTeamsToTeamMap(allTeams);
+
+  //get all institutes
+  const allInstitutes = await instituteService.getAllInstitutes();
+
+  const instituteMap: Map<string, InstituteResponse> =
+    convertToInstituteDetailsMap(allInstitutes);
+
+  //get all game_categories
+  const game_categories = await gameService.getAllGameCategories("");
+
+  const gameCategoryMap: Map<string, GameCategoryResponse> =
+    convertGameCategoryToMap(game_categories);
+
   // Get fixtures for category
   const fixturesAssociatedWithCategory =
     await fixturesSupabase.getFixturesForCategory(game_category_id, season_id);
+
   // Fetch the participants for each fixture
-  const fixturesWithParticipants = await Promise.all(
+  let fixturesWithParticipants = await Promise.all(
     fixturesAssociatedWithCategory.map(async (fixture) => {
       const participants = await fixturesSupabase.getParticipantsForFixture(
         fixture.fixture_id
@@ -266,6 +356,13 @@ async function getFixturesForCategoryAndSeason(
         participants,
       };
     })
+  );
+
+  fixturesWithParticipants = modifyFixtureResponse(
+    fixturesWithParticipants,
+    teamMap,
+    instituteMap,
+    gameCategoryMap
   );
 
   return fixturesWithParticipants;

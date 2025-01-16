@@ -81,4 +81,7 @@ export interface ParticipantRequest {
   user_id: string; // User ID
   fixture_id: string; // Fixture ID
   team_id: string; // Team ID
+  
+  //optional team_details
+  team_details?: any;
 }
