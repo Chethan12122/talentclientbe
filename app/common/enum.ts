@@ -21,3 +21,9 @@ export enum FIXTURE_STATUS {
   LIVE = "LIVE",
   COMPLETED = "COMPLETED",
 }
+
+export enum FIXTURE_TYPE {
+  LEAGUE = "LEAGUE",
+  SEMI_FINAL = "SEMI_FINAL",
+  FINAL = "FINAL"
+}

@@ -83,3 +83,20 @@ export async function getFixturesForCategoryAndSeason(
     next(error);
   }
 }
+
+export async function manualFixtureCreation(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const response = await fixtureService.manualFixtureCreation(req.body);
+    res.json({
+      message: "Fixtures created successfully",
+      data: response,
+    });
+  } catch (error) {
+    logger.error("Error inside manual fixture creation controller");
+    next(error);
+  }
+}

@@ -77,6 +77,17 @@ export interface FixtureRequest {
   fixture_date: string;
 }
 
+
+export interface FixtureManualCreationRequest {
+  category_id: string; // Category of the fixture
+  season_id: string; // Season of the fixture
+  venue: string; // Venue of the fixture
+  status: FIXTURE_STATUS; // Current status of the fixture
+  fixture_date: string;
+  fixture_type: string;
+  teams: Array<string>;
+}
+
 export interface ParticipantRequest {
   user_id: string; // User ID
   fixture_id: string; // Fixture ID

@@ -76,4 +76,9 @@ export const ApplicationStaticErrors = {
     statusCode: 400,
     description: "Invalid score request",
   },
+  INVALID_MANUAL_FIXTURE_REQUEST: {
+    errorCode: "TDS-112",
+    statusCode: 400,
+    description: "Invalid manual fixture request",
+  },
 };

@@ -8,7 +8,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "sourceMap": true,            // Enables generation of source maps
+    "inlineSources": true
   },
   "include": ["app"],
   "exclude": ["node_modules", "dist", "tests"]

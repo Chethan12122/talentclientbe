@@ -5,6 +5,7 @@
 import { FIXTURE_STATUS, TEAM_TYPE } from "../../common/enum";
 import {
   Athlete,
+  FixtureManualCreationRequest,
   FixtureRequest,
   Institute,
   ParticipantRequest,
@@ -409,9 +410,46 @@ async function getFixturesForGame(game_id: string, season_id: string) {
   return response;
 }
 
+async function manualFixtureCreation(
+  fixtureRequest: FixtureManualCreationRequest
+) {
+  const { teams, ...requestPayload } = fixtureRequest;
+  const fixtureCreateResponse =
+    await fixturesSupabase.createFixtures(requestPayload);
+  console.log("fixture", JSON.stringify(fixtureCreateResponse, null, 2));
+
+  const teamUserMap: Map<string, User[]> = new Map<string, User[]>();
+
+  // Populate teamUserMap
+  for (const team_id of teams) {
+    const usersAssociatedWithTeam: User[] =
+      await userService.getAllUsersAssociatedWithTeamAndGameCategory(
+        team_id,
+        requestPayload.category_id
+      );
+    teamUserMap.set(team_id, usersAssociatedWithTeam);
+  }
+
+  // Traverse the map and create participants
+  for (const [team_id, users] of teamUserMap) {
+    for (const user of users) {
+      const participantRequest: ParticipantRequest = {
+        fixture_id: fixtureCreateResponse.fixture_id,
+        team_id: user.team_id,
+        user_id: user.user_id,
+      };
+
+      await createParticipant(participantRequest);
+    }
+  }
+
+  return "success";
+}
+
 export default {
   generateFixtures,
   getFixturesForCategoryAndSeason,
   generateFixturesForGame,
   getFixturesForGame,
+  manualFixtureCreation,
 };

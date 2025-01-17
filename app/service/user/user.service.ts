@@ -22,6 +22,22 @@ async function getAllUsersAssociatedWithGameCategoryAndGender(
   return usersAssociatedWithGameCategory || [];
 }
 
+async function getAllUsersAssociatedWithTeamAndGameCategory(
+  team_id: string,
+  game_category_id: string
+) {
+  const allUsers = await supabaseUserSdk.getAllUsers();
+  const usersAssociatedWithTeamAndGameCategory = allUsers.filter((user) => {
+    if (!user.game_categories) return false;
+    return (
+      user.game_categories.includes(game_category_id) &&
+      user.team_id === team_id
+    );
+  });
+
+  return usersAssociatedWithTeamAndGameCategory || [];
+}
+
 // async function updateUser(user_id: string, requestBody: any) {
 //   const response = await supabaseUserSdk.updateUser(user_id, requestBody);
 //   return response;
@@ -31,4 +47,5 @@ export default {
   getAllUsers,
   getUserById,
   getAllUsersAssociatedWithGameCategoryAndGender,
+  getAllUsersAssociatedWithTeamAndGameCategory,
 };

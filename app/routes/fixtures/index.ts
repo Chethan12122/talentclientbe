@@ -4,8 +4,10 @@ import {
   generateFixturesForGameCategory,
   generateFixturesForGame,
   getFixturesForCategoryAndSeason,
+  manualFixtureCreation,
 } from "./fixtures.routes";
 import { verifyToken } from "../auth/auth.routes";
+import { validateManualFixtureRequest } from "../../validator/fixture.validator";
 const router = express.Router({});
 
 router
@@ -21,6 +23,7 @@ router
 router
   .route("/")
   .get(verifyToken, getFixturesForCategoryAndSeason)
+  .post(verifyToken, validateManualFixtureRequest, manualFixtureCreation)
   .all(methodNotAllowed);
 
 export default router;
