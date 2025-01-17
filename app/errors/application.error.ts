@@ -81,4 +81,9 @@ export const ApplicationStaticErrors = {
     statusCode: 400,
     description: "Invalid manual fixture request",
   },
+  INVALID_FIXTURE_REQUEST: {
+    errorCode: "TDS-113",
+    statusCode: 400,
+    description: "Invalid fixture request",
+  },
 };

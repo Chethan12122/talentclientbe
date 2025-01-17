@@ -25,6 +25,8 @@ import { TeamResponse } from "../../models/team/team.interface";
 import { console } from "inspector";
 import { InstituteResponse } from "../../models/institute/institute.interface";
 import { GameCategoryResponse } from "../../models/game/game.interface";
+import { NonRetryableException } from "../../errors/base.error";
+import { ApplicationStaticErrors } from "../../errors/application.error";
 
 async function generateFixturesForGame(game_id: string, season_id: string) {
   const gameCategories = await gameSupabase.getAllGameCategories(game_id);
@@ -446,10 +448,76 @@ async function manualFixtureCreation(
   return "success";
 }
 
+async function updateFixture(
+  fixture_id: string,
+  fixtureRequest: FixtureManualCreationRequest
+) {
+  const { teams, ...requestPayload } = fixtureRequest;
+
+  const existingFixture = await fixturesSupabase.getFixtureById(fixture_id);
+
+  const existingTeams =
+    await fixturesSupabase.getParticipantsForFixture(fixture_id);
+
+  if (!existingFixture) {
+    throw new NonRetryableException(
+      ApplicationStaticErrors.INVALID_MANUAL_FIXTURE_REQUEST
+    );
+  }
+
+  const response = await fixturesSupabase.updateFixture(
+    fixture_id,
+    requestPayload
+  );
+
+  //check if existing teams contents are same as teams in request
+
+  const existingTeamsArray = existingTeams.map((team) => team.team_id);
+
+  if (
+    existingTeamsArray.length === teams.length &&
+      existingTeamsArray.every((team_id) => teams.includes(team_id)) ||
+    teams.length === 0
+  ) {
+    return;
+  }
+
+  //delete existing participants
+  await fixturesSupabase.deleteParticipantsForFixture(fixture_id);
+
+  //create new participants
+
+  const teamUserMap: Map<string, User[]> = new Map<string, User[]>();
+
+  // Populate teamUserMap
+  for (const team_id of teams) {
+    const usersAssociatedWithTeam: User[] =
+      await userService.getAllUsersAssociatedWithTeamAndGameCategory(
+        team_id,
+        requestPayload.category_id
+      );
+    teamUserMap.set(team_id, usersAssociatedWithTeam);
+  }
+
+  // Traverse the map and create participants
+  for (const [team_id, users] of teamUserMap) {
+    for (const user of users) {
+      const participantRequest: ParticipantRequest = {
+        fixture_id: fixture_id,
+        team_id: user.team_id,
+        user_id: user.user_id,
+      };
+
+      await createParticipant(participantRequest);
+    }
+  }
+}
+
 export default {
   generateFixtures,
   getFixturesForCategoryAndSeason,
   generateFixturesForGame,
   getFixturesForGame,
   manualFixtureCreation,
+  updateFixture,
 };

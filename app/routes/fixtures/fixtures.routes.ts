@@ -100,3 +100,33 @@ export async function manualFixtureCreation(
     next(error);
   }
 }
+
+export async function updateFixture(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    if (
+      req.query.fixture_id === null ||
+      req.query.fixture_id?.length === 0 ||
+      req.body.category_id === undefined ||
+      req.body.category_id?.length === 0
+    ) {
+      throw new NonRetryableException(
+        ApplicationStaticErrors.INVALID_FIXTURE_REQUEST
+      );
+    } 
+    const response = await fixtureService.updateFixture(
+      req.query.fixture_id as string,
+      req.body
+    );
+    res.json({
+      message: "Fixture updated successfully",
+      data: response,
+    });
+  } catch (error) {
+    logger.error("Error inside update fixture controller");
+    next(error);
+  }
+}
