@@ -8,6 +8,7 @@ import {
   VerifyRequestBody,
 } from "../../models/auth/auth.interface";
 import supabaseSdk from "../../sdk/supabase.sdk";
+import userService from "../user/user.service";
 
 async function register(requestBody: RegisterRequestBody) {
   const existingUser = await supabaseSdk.getUserByPhoneNumber(
@@ -55,7 +56,17 @@ async function verify(requestBody: VerifyRequestBody) {
     requestBody.code
   );
 
-  return response;
+  if (!response.user) {
+    throw new NonRetryableException(
+      ApplicationStaticErrors.SOMETHING_WENT_WRONG
+    );
+  }
+
+  const user_details = await userService.getUserById(
+    response.user.id,
+    "user_id"
+  );
+  return { ...response, user_details };
 }
 
 async function logout(tokenObject: any) {
