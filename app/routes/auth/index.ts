@@ -30,7 +30,7 @@ router
   .post(validateUserLoginRequest, login)
   .all(methodNotAllowed);
 
-router.route("/refresh").post(verifyToken, refreshToken).all(methodNotAllowed);
+router.route("/refresh").post(refreshToken).all(methodNotAllowed);
 
 router.route("/logout").post(verifyToken, logout).all(methodNotAllowed);
 
