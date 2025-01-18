@@ -1,6 +1,13 @@
 import express from "express";
 import { methodNotAllowed } from "../../common/utils/common.utils";
-import { login, logout, register, verify, verifyToken } from "./auth.routes";
+import {
+  login,
+  logout,
+  refreshToken,
+  register,
+  verify,
+  verifyToken,
+} from "./auth.routes";
 import {
   validateUserLoginRequest,
   validateUserRegisterRequest,
@@ -22,6 +29,8 @@ router
   .route("/login")
   .post(validateUserLoginRequest, login)
   .all(methodNotAllowed);
+
+router.route("/refresh").post(verifyToken, refreshToken).all(methodNotAllowed);
 
 router.route("/logout").post(verifyToken, logout).all(methodNotAllowed);
 

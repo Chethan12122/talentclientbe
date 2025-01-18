@@ -88,10 +88,30 @@ export async function verifyToken(
     const response = await service.verifyToken(access_token);
     if (!response)
       throw new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED);
-    
+
     next();
   } catch (error) {
     logger.error("Error inside Get Login Status controller" + error);
     next(new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED));
+  }
+}
+
+export async function refreshToken(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const refresh_token: string = req.body.refresh_token;
+    if (!refresh_token)
+      throw new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED);
+    const response = await service.refreshToken(refresh_token);
+    res.json({
+      data: response,
+      message: "Token refreshed successfully",
+    });
+  } catch (error) {
+    logger.error("Error inside Refresh Token controller");
+    next(error);
   }
 }

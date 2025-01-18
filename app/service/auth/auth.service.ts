@@ -79,4 +79,9 @@ async function verifyToken(access_token: string) {
   return response;
 }
 
-export default { register, verify, logout, verifyToken, login };
+async function refreshToken(refresh_token: string) {
+  const response = await supabaseSdk.refreshToken(refresh_token);
+  return response;
+}
+
+export default { register, verify, logout, verifyToken, login, refreshToken };

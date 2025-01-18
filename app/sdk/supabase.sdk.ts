@@ -165,6 +165,23 @@ async function getUserByPhoneNumber(phone_number: string) {
   // Return the first user if found, or null otherwise
   return users;
 }
+
+async function refreshToken(refreshToken: string) {
+  const { data, error } = await supabase.auth.refreshSession({
+    refresh_token: refreshToken,
+  });
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+}
+
 export default {
   signUpWithPhoneNumber,
   verifyPhoneNumber,
@@ -175,4 +192,5 @@ export default {
   addUser,
   getUserByPhoneNumberAndRole,
   getUserByPhoneNumber,
+  refreshToken,
 };
