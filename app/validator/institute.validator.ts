@@ -8,7 +8,7 @@ import { logger } from "../common/logger";
 
 const instituteCreateSchema = z.object({
   name: z.string().min(1),
-  venue: z.string().min(1),
+  venue: z.string().optional(),
 });
 
 function validateInstituteRequest(
@@ -28,4 +28,19 @@ function validateInstituteRequest(
   }
 }
 
-export { validateInstituteRequest };
+function validateVenueRequest(req: Request, res: Response, next: NextFunction) {
+  try {
+    logger.info(JSON.stringify(req.body));
+    z.object({
+      name: z.string().min(1),
+    }).parse(req.body);
+    next();
+  } catch (error: any) {
+    logger.error(error.message);
+    throw new NonRetryableException(
+      ApplicationStaticErrors.INVALID_VENUE_REQUEST
+    );
+  }
+}
+
+export { validateInstituteRequest, validateVenueRequest };

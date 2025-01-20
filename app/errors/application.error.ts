@@ -86,4 +86,9 @@ export const ApplicationStaticErrors = {
     statusCode: 400,
     description: "Invalid fixture request",
   },
+  INVALID_VENUE_REQUEST: {
+    errorCode: "TDS-114",
+    statusCode: 400,
+    description: "Invalid venue request",
+  },
 };

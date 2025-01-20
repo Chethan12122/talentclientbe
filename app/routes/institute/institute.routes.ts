@@ -39,19 +39,39 @@ export async function getInstituteById(
   }
 }
 
-export async function createOrUpdateInstitute(
+export async function createInstitute(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const response = await instituteService.createOrUpdate(req.body);
+    const response = await instituteService.createInstitute(req.body);
     res.json({
       data: response,
-      message: "Institute created/updated successfully",
+      message: "Institute created successfully",
     });
   } catch (error) {
     logger.error("Error inside Institutes create controller");
+    next(error);
+  }
+}
+
+export async function updateInstitute(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const response = await instituteService.updateInstitute(
+      req.body,
+      req.params.institute_id
+    );
+    res.json({
+      data: response,
+      message: "Institute updated successfully",
+    });
+  } catch (error) {
+    logger.error("Error inside Institutes update controller");
     next(error);
   }
 }

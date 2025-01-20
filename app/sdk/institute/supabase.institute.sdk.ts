@@ -1,7 +1,10 @@
 import { supabase } from "../../common/supabase";
 import { ApplicationDynamicErrors } from "../../errors/application.error";
 import { NonRetryableException } from "../../errors/base.error";
-import { InstituteRequest } from "../../models/institute/institute.interface";
+import {
+  InstituteRequest,
+  VenueRequest,
+} from "../../models/institute/institute.interface";
 
 const createInstitute = async (instituteRequest: InstituteRequest) => {
   const { data, error } = await supabase
@@ -99,11 +102,82 @@ const updateInstitute = async (
   return data[0];
 };
 
+const createVenue = async (venueRequest: VenueRequest) => {
+  const { data, error } = await supabase
+    .from("venue")
+    .insert([venueRequest])
+    .select();
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data[0];
+};
+
+const getVenueById = async (venueId: string) => {
+  const { data, error } = await supabase
+    .from("venue")
+    .select("*")
+    .eq("id", venueId)
+    .single();
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+};
+
+const getAllVenues = async () => {
+  const { data, error } = await supabase.from("venue").select("*");
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+};
+
+const updateVenue = async (venueRequest: VenueRequest, venueId: string) => {
+  const { data, error } = await supabase
+    .from("venue")
+    .update(venueRequest)
+    .eq("id", venueId)
+    .select();
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data[0];
+};
+
 export default {
   createInstitute,
+  updateInstitute,
   getAllInstitutes,
   getInstituteById,
   deleteInstituteById,
   getInstituteByName,
-  updateInstitute,
+  createVenue,
+  getVenueById,
+  getAllVenues,
+  updateVenue,
 };
