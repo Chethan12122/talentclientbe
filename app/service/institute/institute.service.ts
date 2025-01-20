@@ -2,6 +2,7 @@
 import { TEAM_TYPE } from "../../common/enum";
 import {
   InstituteRequest,
+  VenueInstituteResponse,
   VenueRequest,
 } from "../../models/institute/institute.interface";
 import { TeamRequest } from "../../models/team/team.interface";
@@ -76,6 +77,27 @@ const updateVenue = async (venueRequest: VenueRequest, venue_id: string) => {
   return response;
 };
 
+async function getInstituteByVenueId(venue_id: string) {
+  const response = await supabaseInstituteSdk.getInstituteByVenueId(venue_id);
+  return response;
+}
+
+const getAllVenuesByInstituteIds = async () => {
+  const allVenues = await getAllVenues();
+
+  const venueInstituteResponse: VenueInstituteResponse[] = await Promise.all(
+    allVenues.map(async (venue) => {
+      const institute = await getInstituteByVenueId(venue.id);
+      return {
+        venue_id: venue.id,
+        institute_id: institute ? institute.institute_id : null,
+      };
+    })
+  );
+
+  return venueInstituteResponse;
+};
+
 export default {
   createInstitute,
   updateInstitute,
@@ -86,4 +108,5 @@ export default {
   getAllVenues,
   getVenueById,
   updateVenue,
+  getAllVenuesByInstituteIds,
 };

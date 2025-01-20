@@ -12,3 +12,13 @@ export interface InstituteResponse {
 export interface VenueRequest {
   name: string;
 }
+
+export interface VenueInstituteResponse {
+  venue_id: string;
+  institute_id: string | null;
+}
+
+export interface VenueResponse {
+  id: string;
+  name: string;
+}

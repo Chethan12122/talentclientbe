@@ -169,6 +169,18 @@ const updateVenue = async (venueRequest: VenueRequest, venueId: string) => {
   return data[0];
 };
 
+const getInstituteByVenueId = async (venueId: string) => {
+  const { data, error } = await supabase
+    .from("institutes")
+    .select("*")
+    .eq("venue", venueId)
+    .single();
+  if (error) {
+    return null;
+  }
+  return data;
+};
+
 export default {
   createInstitute,
   updateInstitute,
@@ -180,4 +192,5 @@ export default {
   getVenueById,
   getAllVenues,
   updateVenue,
+  getInstituteByVenueId,
 };
