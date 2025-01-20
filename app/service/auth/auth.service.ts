@@ -66,7 +66,7 @@ async function verify(requestBody: VerifyRequestBody) {
     response.user.id,
     "user_id"
   );
-  return { ...response, user_details };
+  return { ...response, user_details: user_details[0] };
 }
 
 async function logout(tokenObject: any) {
