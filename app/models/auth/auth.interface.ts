@@ -1,4 +1,4 @@
-import { Role } from "../../common/enum";
+import { Role, SOURCE } from "../../common/enum";
 
 export interface RegisterRequestBody {
   first_name: string;
@@ -15,4 +15,5 @@ export interface VerifyRequestBody {
 
 export interface LoginRequestBody {
   phone_number: string;
+  source: SOURCE;
 }

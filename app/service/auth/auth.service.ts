@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Role, SOURCE } from "../../common/enum";
 import { logger } from "../../common/logger";
 import { ApplicationStaticErrors } from "../../errors/application.error";
 import { NonRetryableException } from "../../errors/base.error";
@@ -77,7 +78,36 @@ async function logout(tokenObject: any) {
   await supabaseSdk.logoutUser();
 }
 
+async function checkValidUser(phone_number: string): Promise<boolean> {
+  const usersWithPhoneNumber =
+    await supabaseSdk.getUserByPhoneNumber(phone_number);
+
+  if (usersWithPhoneNumber.length === 0) {
+    throw new NonRetryableException(
+      ApplicationStaticErrors.INVALID_USER_LOGIN_REQUEST
+    );
+  }
+
+  for (const user of usersWithPhoneNumber) {
+    if (user.role === Role.Admin || user.role === Role.SuperAdmin) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 async function login(requestBody: LoginRequestBody) {
+  const validUser =
+    requestBody.source === SOURCE.ADMIN
+      ? await checkValidUser(requestBody.phone_number)
+      : true;
+  if (!validUser) {
+    throw new NonRetryableException(
+      ApplicationStaticErrors.INVALID_USER_LOGIN_REQUEST
+    );
+  }
+
   const response = await supabaseSdk.loginWithPhoneNumber(
     requestBody.phone_number
   );

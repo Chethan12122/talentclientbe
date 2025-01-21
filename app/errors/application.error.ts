@@ -91,4 +91,10 @@ export const ApplicationStaticErrors = {
     statusCode: 400,
     description: "Invalid venue request",
   },
+  INVALID_USER_LOGIN_REQUEST: {
+    errorCode: "TDS-115",
+    statusCode: 400,
+    description:
+      "Please check if you have required permission to login for this phone number",
+  },
 };

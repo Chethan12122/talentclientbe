@@ -25,5 +25,10 @@ export enum FIXTURE_STATUS {
 export enum FIXTURE_TYPE {
   LEAGUE = "LEAGUE",
   SEMI_FINAL = "SEMI_FINAL",
-  FINAL = "FINAL"
+  FINAL = "FINAL",
+}
+
+export enum SOURCE {
+  ADMIN = "ADMIN",
+  APP = "APP",
 }
