@@ -1,6 +1,7 @@
 import { logger } from "../../common/logger";
 import { Request, Response, NextFunction } from "express";
 import userService from "../../service/user/user.service";
+import instituteService from "../../service/institute/institute.service";
 
 export async function getAllUsers(
   req: Request,
@@ -10,13 +11,28 @@ export async function getAllUsers(
   try {
     const response = await userService.getAllUsers();
     res.json({
-      data: response,
+      data: await modifyGetAllUserResponse(response),
       message: "Users fetched successfully",
     });
   } catch (error) {
     logger.error("Error inside users get all controller");
     next(error);
   }
+}
+
+function modifyGetAllUserResponse(response: any) {
+  return Promise.all(
+    response.map(async (user: any) => {
+      const instituteDetails = user.institute_id
+        ? await instituteService.getInstituteById(user.institute_id)
+        : null;
+
+      return {
+        ...user,
+        institute_details: instituteDetails,
+      };
+    })
+  );
 }
 
 export async function getUserById(
