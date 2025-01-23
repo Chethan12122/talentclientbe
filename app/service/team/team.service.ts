@@ -23,9 +23,15 @@ async function getAllTeams(filter_team_type: string) {
   const allTeams = await supabaseSdk.getAllTeams(filter_team_type);
   const teamsWithDetails = await Promise.all(
     allTeams.map(async (team) => {
-      const instituteDetails = await instituteService.getInstituteById(
+      let instituteDetails = await instituteService.getInstituteById(
         team.institute_id
       );
+      instituteDetails = {
+        ...instituteDetails,
+        venue_details: instituteDetails.venue
+          ? await instituteService.getVenueById(instituteDetails.venue)
+          : null,
+      };
       return { ...team, instituteDetails };
     })
   );
