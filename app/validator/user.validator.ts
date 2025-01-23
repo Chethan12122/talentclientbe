@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from "express";
 import { NonRetryableException } from "../errors/base.error";
 import { ApplicationStaticErrors } from "../errors/application.error";
 import { isValidPhoneNumber } from "../validator/common.validator";
-import { Role } from "../common/enum";
+import { Role, SOURCE } from "../common/enum";
 
 const userRegisterRequestSchema = z.object({
   first_name: z.string().min(1),
@@ -33,6 +33,7 @@ const userLoginRequestSchema = z.object({
   phone_number: z.string().refine((data) => isValidPhoneNumber(data), {
     message: "Invalid phone number",
   }),
+  source: z.enum(Object.values(SOURCE) as [string, ...string[]]),
 });
 
 function validateUserRegisterRequest(

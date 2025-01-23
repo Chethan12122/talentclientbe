@@ -2,6 +2,7 @@
 import { TEAM_TYPE } from "../../common/enum";
 import {
   InstituteRequest,
+  InstituteResponse,
   VenueInstituteResponse,
   VenueRequest,
 } from "../../models/institute/institute.interface";
@@ -40,7 +41,16 @@ const updateInstitute = async (
 };
 
 const getAllInstitutes = async () => {
-  const response = await supabaseInstituteSdk.getAllInstitutes();
+  const allInstitutes = await supabaseInstituteSdk.getAllInstitutes();
+  const response: any[] = await Promise.all(
+    allInstitutes.map(async (institute: InstituteResponse) => ({
+      ...institute,
+      venue_details: institute.venue
+        ? await getVenueById(institute.venue)
+        : null,
+    }))
+  );
+
   return response;
 };
 
