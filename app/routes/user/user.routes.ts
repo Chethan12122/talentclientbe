@@ -56,6 +56,23 @@ export async function getUserById(
   }
 }
 
+export async function refereshUserInfoFromExcel(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const response = await userService.refereshUserInfoFromExcel();
+    res.json({
+      data: response,
+      message: "User info synchronized successfully",
+    });
+  } catch (error) {
+    logger.error("Error inside users synchronize controller");
+    next(error);
+  }
+}
+
 // export async function updateUser(
 //   req: Request,
 //   res: Response,

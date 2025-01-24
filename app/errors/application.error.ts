@@ -97,4 +97,14 @@ export const ApplicationStaticErrors = {
     description:
       "Please check if you have required permission to login for this phone number",
   },
+  INVALID_GOOGLE_SHEET_ID: {
+    errorCode: "TDS-116",
+    statusCode: 400,
+    description: "Invalid google sheet id/ name",
+  },
+  NOT_ENOUGH_DATA_IN_GOOGLE_SHEET: {
+    errorCode: "TDS-117",
+    statusCode: 400,
+    description: "Not enough data in google sheet",
+  },
 };
