@@ -44,6 +44,7 @@ export interface Institute {
 
 export interface ScheduledFixture {
   fixture_date: string;
+  referee_id: string;
   competing_institutes: {
     home_institute: string;
     away_institute: string;
@@ -75,6 +76,7 @@ export interface FixtureRequest {
   venue: string; // Venue of the fixture
   status: FIXTURE_STATUS; // Current status of the fixture
   fixture_date: string;
+  referee_id: string;
 }
 
 
@@ -86,6 +88,7 @@ export interface FixtureManualCreationRequest {
   fixture_date: string;
   fixture_type: string;
   teams: Array<string>;
+  referee_id: string;
 }
 
 export interface ParticipantRequest {

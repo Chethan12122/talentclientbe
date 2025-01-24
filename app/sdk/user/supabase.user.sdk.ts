@@ -1,3 +1,4 @@
+import { Role } from "../../common/enum";
 import { supabase } from "../../common/supabase";
 import { ApplicationDynamicErrors } from "../../errors/application.error";
 import { NonRetryableException } from "../../errors/base.error";
@@ -34,6 +35,24 @@ async function getUserById(id: string, type: string) {
   return data;
 }
 
+async function getAllReferres() {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("role", Role.Referee);
+
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+}
+
 // async function updateUser(user_id: string, requestBody: any) {
 //   const { data, error } = await supabase
 //     .from("users")
@@ -54,4 +73,4 @@ async function getUserById(id: string, type: string) {
 //   return data;
 // }
 
-export default { getAllUsers, getUserById };
+export default { getAllUsers, getUserById, getAllReferres };

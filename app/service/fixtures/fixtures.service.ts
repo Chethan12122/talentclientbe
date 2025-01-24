@@ -67,10 +67,12 @@ async function generateFixtures(game_category_id: string, season_id: string) {
   const seasonInfo = await seasonService.getSeasonById(season_id);
   const venues: VenueInstituteResponse[] =
     await instituteService.getAllVenuesByInstituteIds();
+  const allReferres: User[] = await userService.getAllReferres();
   const scheduledFixtures = createInstituteFixtures(
     institutes,
     seasonInfo,
-    venues
+    venues,
+    allReferres
   );
 
   await createFixturesAndParticipants(
@@ -97,7 +99,7 @@ async function createFixturesAndParticipants(
   instituteMap: Map<string, Team[]>
 ) {
   for (const fixture of scheduledFixtures) {
-    const { fixture_date, competing_institutes, venue } = fixture;
+    const { fixture_date, competing_institutes, venue, referee_id } = fixture;
     const { home_institute, away_institute } = competing_institutes;
 
     for (const team_type of Object.values(TEAM_TYPE)) {
@@ -106,6 +108,7 @@ async function createFixturesAndParticipants(
         category_id: game_category_id,
         season_id,
         venue,
+        referee_id,
         status: FIXTURE_STATUS.UPCOMING,
       };
 
@@ -219,7 +222,8 @@ function generateInstituteFixtures(
 function scheduleInstituteFixturesWithVenue(
   fixtures: [string, string][][],
   seasonDetails: any,
-  venues: VenueInstituteResponse[]
+  venues: VenueInstituteResponse[],
+  referees: User[]
 ): ScheduledFixture[] {
   const scheduledFixtures: ScheduledFixture[] = [];
   let currentDate = new Date(seasonDetails.start_date); // Use `let` for modifiable variable
@@ -245,12 +249,17 @@ function scheduleInstituteFixturesWithVenue(
       const venueIndex = scheduledFixtures.length % eligibleVenues.length;
       const selectedVenue = eligibleVenues[venueIndex].venue_id;
 
+      //randomly select a referee for each fixture and should be in round robin fashion
+      const refereeIndex = scheduledFixtures.length % referees.length;
+      const selectedReferee = referees[refereeIndex].user_id;
+
       scheduledFixtures.push({
         fixture_date: currentDate.toISOString().split("T")[0],
         competing_institutes: {
           home_institute: home,
           away_institute: away,
         },
+        referee_id: selectedReferee,
         venue: selectedVenue, // Properly assigned venue
       });
     });
@@ -265,10 +274,16 @@ function scheduleInstituteFixturesWithVenue(
 function createInstituteFixtures(
   institutes: Institute[],
   seasonDetails: any,
-  venues: VenueInstituteResponse[]
+  venues: VenueInstituteResponse[],
+  referees: User[]
 ): ScheduledFixture[] {
   const fixtures = generateInstituteFixtures(institutes);
-  return scheduleInstituteFixturesWithVenue(fixtures, seasonDetails, venues);
+  return scheduleInstituteFixturesWithVenue(
+    fixtures,
+    seasonDetails,
+    venues,
+    referees
+  );
 }
 
 async function createFixtures(fixtureRequest: FixtureRequest) {
@@ -297,7 +312,8 @@ function modifyFixtureResponse(
   fixturesWithParticipants: any[],
   teamMap: Map<string, TeamResponse>,
   venueMap: Map<string, VenueResponse>,
-  gameCategoryMap: Map<string, GameCategoryResponse>
+  gameCategoryMap: Map<string, GameCategoryResponse>,
+  refereeMap: Map<string, User>
 ) {
   fixturesWithParticipants.forEach(
     (fixture: {
@@ -306,6 +322,8 @@ function modifyFixtureResponse(
       category_id: string;
       category_details: any;
       venue_details: any;
+      referee_id: string;
+      referee_details: any;
     }) => {
       const participants = fixture.participants || [];
 
@@ -334,6 +352,12 @@ function modifyFixtureResponse(
           category_id
         ) as GameCategoryResponse;
       }
+
+      const referee_id = fixture.referee_id;
+
+      if (refereeMap.has(referee_id)) {
+        fixture.referee_details = refereeMap.get(referee_id) as User;
+      }
     }
   );
 
@@ -356,7 +380,6 @@ async function getFixturesForCategoryAndSeason(
 
   const teamMap: Map<string, TeamResponse> = convertTeamsToTeamMap(allTeams);
 
-
   //venue
   const venues: VenueResponse[] = await instituteService.getAllVenues();
   const venueMap: Map<string, VenueResponse> = convertToVenueMap(venues);
@@ -366,6 +389,12 @@ async function getFixturesForCategoryAndSeason(
 
   const gameCategoryMap: Map<string, GameCategoryResponse> =
     convertGameCategoryToMap(game_categories);
+
+  //get all referees
+  const referees = await userService.getAllReferres();
+  const refereeMap: Map<string, User> = new Map<string, User>(
+    referees.map((referee) => [referee.user_id, referee])
+  );
 
   // Get fixtures for category
   const fixturesAssociatedWithCategory =
@@ -388,7 +417,8 @@ async function getFixturesForCategoryAndSeason(
     fixturesWithParticipants,
     teamMap,
     venueMap,
-    gameCategoryMap
+    gameCategoryMap,
+    refereeMap
   );
 
   return fixturesWithParticipants;

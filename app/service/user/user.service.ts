@@ -52,6 +52,11 @@ async function getAllUsersAssociatedWithTeamAndGameCategory(
   return usersAssociatedWithTeamAndGameCategory || [];
 }
 
+async function getAllReferres() {
+  const response = await supabaseUserSdk.getAllReferres();
+  return response;
+}
+
 // async function updateUser(user_id: string, requestBody: any) {
 //   const response = await supabaseUserSdk.updateUser(user_id, requestBody);
 //   return response;
@@ -62,4 +67,5 @@ export default {
   getUserById,
   getAllUsersAssociatedWithGameCategoryAndGender,
   getAllUsersAssociatedWithTeamAndGameCategory,
+  getAllReferres
 };
