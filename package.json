@@ -16,7 +16,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "ts-node-dev --respawn --transpile-only app/server.ts",
+    "dev": "npm run build && npm run start", 
     "prepare": "husky install",
     "lint": "npx eslint ."
   },
@@ -30,10 +30,13 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-winston": "^4.2.0",
+    "googleapis": "^144.0.0",
     "helmet": "^8.0.0",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@types/convict": "^6.1.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",

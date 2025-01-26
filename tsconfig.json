@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
     "target": "ES2021",
-    "module": "ESNext",
+    "module": "commonjs",
     "rootDir": "app",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "sourceMap": true,            // Enables generation of source maps
+    "inlineSources": true
   },
   "include": ["app"],
   "exclude": ["node_modules", "dist", "tests"]

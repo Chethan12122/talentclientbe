@@ -1,0 +1,33 @@
+export interface AthleteInformation {
+  phone_number: string;
+  date: Date;
+  name: string;
+  age: number;
+  height: number;
+  weight: number;
+  sport: string;
+  vertical_jump_trial1: number;
+  vertical_jump_trial2: number;
+  vertical_jump_trial3: number;
+  best_of_3_in_vertical_jump: number;
+  squat_jump_trial1: number;
+  squat_jump_trial2: number;
+  squat_jump_trial3: number;
+  best_of_3_in_squat_jump: number;
+  iso_belt_squat_trial1: number;
+  iso_belt_squat_trial2: number;
+  iso_belt_squat_trial3: number;
+  best_of_3_in_iso_belt_squat: number;
+  agility_test_trial1: number;
+  agility_test_trial2: number;
+  agility_test_trial3: number;
+  best_of_3_in_agility_test: number;
+  ten_meter_speed_trial1: number;
+  ten_meter_speed_trial2: number;
+  ten_meter_speed_trial3: number;
+  best_of_3_in_ten_meter_speed: number;
+  mb_throw_trial1: number;
+  mb_throw_trial2: number;
+  mb_throw_trial3: number;
+  best_of_3_in_mb_throw: number;
+}

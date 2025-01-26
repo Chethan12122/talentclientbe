@@ -1,0 +1,22 @@
+const HTTP_STATUS = {
+  METHOD_NOT_FOUND: 405,
+  OK: 200,
+  INTERNAL_SERVER_ERROR: 500,
+  BAD_REQUEST: 400,
+  UNAVAILABLE_FOR_SOME_REASON: 451,
+  NETWORK_AUTHENTICATION_REQUIRED: 511,
+  SERVICE_UNAVAILABLE: 503,
+};
+
+const REGEX = {
+  EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/u,
+  PHONE_NUMBER: /^\+91[6-9]\d{9}$/u,
+};
+
+const CORS_OPTIONS = {
+  origin: "*",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  optionsSuccessStatus: 204,
+};
+
+export { HTTP_STATUS, REGEX, CORS_OPTIONS };
