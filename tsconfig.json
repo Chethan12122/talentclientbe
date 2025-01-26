@@ -9,8 +9,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "sourceMap": true,            // Enables generation of source maps
-    "inlineSources": true
+    "sourceMap": true, // Enables generation of source maps
+    "inlineSources": true,
+    "types": ["node"], // Ensure Node.js types
+    "baseUrl": "."
   },
   "include": ["app"],
   "exclude": ["node_modules", "dist", "tests"]
