@@ -17,7 +17,6 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "npm run build && npm run start", 
-    "prepare": "husky install",
     "lint": "npx eslint ."
   },
   "keywords": [],
