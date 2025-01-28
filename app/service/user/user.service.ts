@@ -25,7 +25,9 @@ async function getUserById(id: string, type: string) {
         ? await teamService.getTeamById(user.team_id)
         : null,
       extra_user_details:
-        type === "phone_number" ? await getUserExtraInformation(id) : null,
+        type === "phone_number" || type === "user_id"
+          ? await getUserExtraInformation(user.phone_number)
+          : null,
     }))
   );
 

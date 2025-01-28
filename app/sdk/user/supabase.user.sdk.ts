@@ -100,6 +100,12 @@ async function getUserExtraInformation(phone_number: string) {
     );
   }
 
+  // if data sort by date
+
+  data.sort((a: any, b: any) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+
   return data;
 }
 
