@@ -40,12 +40,7 @@ function mapRowToAthlete(row: Record<string, string>): AthleteInformation {
   for (const [header, field] of Object.entries(columnMapping)) {
     const value = row[header];
 
-    // Parse numeric fields if necessary, otherwise keep strings
-    if (typeof value === "string" && !isNaN(Number(value))) {
-      athlete[field] = Number(value) as any; // For numeric fields
-    } else {
-      athlete[field] = value as any; // For string fields
-    }
+    athlete[field] = value as any;
   }
 
   return athlete as AthleteInformation;
