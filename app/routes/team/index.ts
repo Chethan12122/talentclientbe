@@ -6,6 +6,7 @@ import {
   getTeamById,
   deleteTeamById,
   update,
+  addUserToTeam,
 } from "./team.routes";
 import { validateTeamRequest } from "../../validator/team.validator";
 import { verifyToken } from "../auth/auth.routes";
@@ -23,4 +24,10 @@ router
   .put(verifyToken, validateTeamRequest, update)
   .delete(verifyToken, deleteTeamById)
   .all(methodNotAllowed);
+
+router
+  .route("/:team_id/user/:user_id")
+  .post(verifyToken, addUserToTeam)
+  .all(methodNotAllowed);
+
 export default router;

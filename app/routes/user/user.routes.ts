@@ -73,6 +73,28 @@ export async function refereshUserInfoFromExcel(
   }
 }
 
+export async function addGameCategoryForUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const requestType = req.query.type as string;
+    const response = await userService.addGameCategoryForUser(
+      req.params.id,
+      req.params.game_category_id,
+      requestType || "ADD"
+    );
+    res.json({
+      data: response,
+      message: "Added game category for user successfully",
+    });
+  } catch (error) {
+    logger.error("Error inside users add game category controller");
+    next(error);
+  }
+}
+
 // export async function updateUser(
 //   req: Request,
 //   res: Response,

@@ -181,6 +181,23 @@ const getInstituteByVenueId = async (venueId: string) => {
   return data;
 };
 
+const getUsersAssociatedWithInstitute = async (instituteId: string) => {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("institute_id", instituteId);
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+};
+
 export default {
   createInstitute,
   updateInstitute,
@@ -193,4 +210,5 @@ export default {
   getAllVenues,
   updateVenue,
   getInstituteByVenueId,
+  getUsersAssociatedWithInstitute,
 };

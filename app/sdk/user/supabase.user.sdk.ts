@@ -109,6 +109,24 @@ async function getUserExtraInformation(phone_number: string) {
   return data;
 }
 
+async function updateUserInfo(id: string, payload: any) {
+  const { data, error } = await supabase
+    .from("users")
+    .update(payload)
+    .eq("user_id", id);
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+
+  return data;
+}
+
 export default {
   getAllUsers,
   getUserById,
@@ -116,4 +134,5 @@ export default {
   addAthleteData,
   deleteALLAthleteData,
   getUserExtraInformation,
+  updateUserInfo,
 };

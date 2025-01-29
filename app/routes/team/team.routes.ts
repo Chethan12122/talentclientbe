@@ -10,9 +10,8 @@ export async function create(
   try {
     const response = await teamService.create(req.body);
     res.json({
-      message:
-        "Team created successfully",
-        data: response
+      message: "Team created successfully",
+      data: response,
     });
   } catch (error) {
     logger.error("Error inside team create controller");
@@ -28,8 +27,7 @@ export async function update(
   try {
     await teamService.update(req.params.team_id, req.body);
     res.json({
-      message:
-        "Team updated successfully" + req.params.team_id,
+      message: "Team updated successfully" + req.params.team_id,
     });
   } catch (error) {
     logger.error("Error inside team update controller");
@@ -85,6 +83,28 @@ export async function deleteTeamById(
     });
   } catch (error) {
     logger.error("Error inside team delete by id controller");
+    next(error);
+  }
+}
+
+export async function addUserToTeam(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const requestType = req.query.type as string;
+    const response = await teamService.addUserToTeam(
+      req.params.team_id,
+      req.params.user_id,
+      requestType || "ADD"
+    );
+    res.json({
+      data: response,
+      message: "User added to team successfully",
+    });
+  } catch (error) {
+    logger.error("Error inside team add user controller");
     next(error);
   }
 }

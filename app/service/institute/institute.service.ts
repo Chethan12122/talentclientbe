@@ -55,7 +55,18 @@ const getAllInstitutes = async () => {
 };
 
 const getInstituteById = async (institute_id: string) => {
-  const response = await supabaseInstituteSdk.getInstituteById(institute_id);
+  const institute_details =
+    await supabaseInstituteSdk.getInstituteById(institute_id);
+
+  return {
+    ...institute_details,
+    users_associated: await getUsersAssociatedWithInstitute(institute_id),
+  };
+};
+
+const getUsersAssociatedWithInstitute = async (institute_id: string) => {
+  const response =
+    await supabaseInstituteSdk.getUsersAssociatedWithInstitute(institute_id);
   return response;
 };
 

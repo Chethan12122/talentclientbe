@@ -116,10 +116,46 @@ async function updateTeam(id: string, teamRequest: TeamRequest) {
   return data;
 }
 
+async function getUsersAssociatedWithTeam(teamId: string) {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("team_id", teamId);
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+}
+
+async function addUserToTeam(teamId: string, userId: string) {
+  const { data, error } = await supabase
+    .from("users")
+    .update({ team_id: teamId === "null" ? null : teamId })
+    .eq("user_id", userId);
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+}
+
 export default {
   createTeam,
   getAllTeams,
   getTeamById,
   deleteTeamById,
   updateTeam,
+  getUsersAssociatedWithTeam,
+  addUserToTeam,
 };

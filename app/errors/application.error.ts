@@ -107,4 +107,20 @@ export const ApplicationStaticErrors = {
     statusCode: 400,
     description: "Not enough data in google sheet",
   },
+  TEAM_NOT_FOUND: {
+    errorCode: "TDS-118",
+    statusCode: 400,
+    description: "Team not found",
+  },
+  USER_NOT_ASSOCIATED_WITH_INSTITUTE: {
+    errorCode: "TDS-119",
+    statusCode: 400,
+    description:
+      "User not associated with institute. Therby cant assign to team",
+  },
+  INVALID_GAME_CATEGORY: {
+    errorCode: "TDS-120",
+    statusCode: 400,
+    description: "Invalid game category",
+  },
 };

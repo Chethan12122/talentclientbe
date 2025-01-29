@@ -120,10 +120,41 @@ async function getUserExtraInformation(phone_number: string) {
   return response;
 }
 
-// async function updateUser(user_id: string, requestBody: any) {
-//   const response = await supabaseUserSdk.updateUser(user_id, requestBody);
-//   return response;
-// }
+async function addGameCategoryForUser(
+  user_id: string,
+  game_category_id: string,
+  type: string
+) {
+  const user_details = await getUserById(user_id, "user_id");
+
+  const gameCategoriesOfUser = user_details[0].game_categories || [];
+  if (type.toLocaleUpperCase() !== "REMOVE") {
+    if (gameCategoriesOfUser.includes(game_category_id)) {
+      return;
+    }
+
+    const game_categories = [...gameCategoriesOfUser, game_category_id];
+
+    await supabaseUserSdk.updateUserInfo(user_id, {
+      game_categories: game_categories,
+    });
+  } else {
+    if (!gameCategoriesOfUser.includes(game_category_id)) {
+      throw new NonRetryableException(
+        ApplicationStaticErrors.INVALID_GAME_CATEGORY
+      );
+    }
+
+    //remove game_category_id
+    const game_categories: string[] = gameCategoriesOfUser.filter(
+      (game_category: string) => game_category !== game_category_id
+    );
+
+    await supabaseUserSdk.updateUserInfo(user_id, {
+      game_categories: game_categories,
+    });
+  }
+}
 
 export default {
   getAllUsers,
@@ -132,4 +163,5 @@ export default {
   getAllUsersAssociatedWithTeamAndGameCategory,
   getAllReferres,
   refereshUserInfoFromExcel,
+  addGameCategoryForUser,
 };
