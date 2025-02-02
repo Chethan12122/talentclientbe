@@ -548,6 +548,10 @@ async function updateFixture(
   }
 }
 
+async function getFixtureById(fixture_id: string) {
+  return await fixturesSupabase.getFixtureById(fixture_id);
+}
+
 export default {
   generateFixtures,
   getFixturesForCategoryAndSeason,
@@ -555,4 +559,5 @@ export default {
   getFixturesForGame,
   manualFixtureCreation,
   updateFixture,
+  getFixtureById,
 };

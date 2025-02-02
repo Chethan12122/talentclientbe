@@ -6,6 +6,7 @@ import {
   getFixturesForCategoryAndSeason,
   manualFixtureCreation,
   updateFixture,
+  getFixtureById,
 } from "./fixtures.routes";
 import { verifyToken } from "../auth/auth.routes";
 import { validateManualFixtureRequest } from "../../validator/fixture.validator";
@@ -26,6 +27,11 @@ router
   .get(verifyToken, getFixturesForCategoryAndSeason)
   .post(verifyToken, validateManualFixtureRequest, manualFixtureCreation)
   .put(verifyToken, updateFixture)
+  .all(methodNotAllowed);
+
+router
+  .route("/id/:fixture_id")
+  .get(verifyToken, getFixtureById)
   .all(methodNotAllowed);
 
 export default router;

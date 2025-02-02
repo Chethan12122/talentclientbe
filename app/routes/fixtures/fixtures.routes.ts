@@ -116,7 +116,7 @@ export async function updateFixture(
       throw new NonRetryableException(
         ApplicationStaticErrors.INVALID_FIXTURE_REQUEST
       );
-    } 
+    }
     const response = await fixtureService.updateFixture(
       req.query.fixture_id as string,
       req.body
@@ -127,6 +127,23 @@ export async function updateFixture(
     });
   } catch (error) {
     logger.error("Error inside update fixture controller");
+    next(error);
+  }
+}
+
+export async function getFixtureById(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const response = await fixtureService.getFixtureById(req.params.fixture_id);
+    res.json({
+      message: "Fixture fetched successfully",
+      data: response,
+    });
+  } catch (error) {
+    logger.error("Error inside get fixture by id controller");
     next(error);
   }
 }
