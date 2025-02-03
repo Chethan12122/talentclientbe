@@ -76,15 +76,16 @@ export interface FixtureRequest {
   venue: string; // Venue of the fixture
   status: FIXTURE_STATUS; // Current status of the fixture
   fixture_date: string;
+  winner_team_id?: string;
   referee_id: string;
 }
-
 
 export interface FixtureManualCreationRequest {
   category_id: string; // Category of the fixture
   season_id: string; // Season of the fixture
   venue: string; // Venue of the fixture
   status: FIXTURE_STATUS; // Current status of the fixture
+  winner_team_id?: string;
   fixture_date: string;
   fixture_type: string;
   teams: Array<string>;
@@ -95,7 +96,7 @@ export interface ParticipantRequest {
   user_id: string; // User ID
   fixture_id: string; // Fixture ID
   team_id: string; // Team ID
-  
+
   //optional team_details
   team_details?: any;
 }
