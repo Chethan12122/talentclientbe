@@ -489,6 +489,20 @@ async function updateFixture(
 ) {
   const { teams, ...requestPayload } = fixtureRequest;
 
+  if (teams === undefined || teams.length === 0) {
+    await fixturesSupabase.updateFixture(fixture_id, requestPayload);
+    return;
+  }
+
+  if (
+    fixtureRequest.category_id === undefined ||
+    fixtureRequest.category_id?.length === 0
+  ) {
+    throw new NonRetryableException(
+      ApplicationStaticErrors.INVALID_MANUAL_FIXTURE_REQUEST
+    );
+  }
+
   const existingFixture = await fixturesSupabase.getFixtureById(fixture_id);
 
   const existingTeams =

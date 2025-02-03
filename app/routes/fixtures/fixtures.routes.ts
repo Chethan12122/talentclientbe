@@ -107,12 +107,7 @@ export async function updateFixture(
   next: NextFunction
 ) {
   try {
-    if (
-      req.query.fixture_id === null ||
-      req.query.fixture_id?.length === 0 ||
-      req.body.category_id === undefined ||
-      req.body.category_id?.length === 0
-    ) {
+    if (req.query.fixture_id === null || req.query.fixture_id?.length === 0) {
       throw new NonRetryableException(
         ApplicationStaticErrors.INVALID_FIXTURE_REQUEST
       );
