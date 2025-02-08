@@ -112,7 +112,15 @@ async function login(requestBody: LoginRequestBody) {
     requestBody.phone_number
   );
 
-  return response;
+  const user_details = await userService.getUserById(
+    response.user.id,
+    "user_id"
+  );
+
+  return {
+    ...response,
+    user_details: user_details,
+  };
 }
 
 async function verifyToken(access_token: string) {
