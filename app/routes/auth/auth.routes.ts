@@ -13,7 +13,7 @@ export async function register(
     await service.register(req.body);
     res.json({
       message:
-        "User registered successfully. Otp has been sent to your phone number",
+        "User registered successfully. Please check your email to verify your account",
     });
   } catch (error) {
     logger.error("Error inside Register controller");
@@ -112,6 +112,62 @@ export async function refreshToken(
     });
   } catch (error) {
     logger.error("Error inside Refresh Token controller");
+    next(error);
+  }
+}
+
+export async function forgotPassword(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    if (!req.body.email)
+      throw new NonRetryableException(
+        ApplicationStaticErrors.INVALID_FORGOT_PASSWORD_REQUEST
+      );
+    const response = await service.forgotPassword(req.body.email);
+    res.json({
+      data: response,
+      message: "Password reset link sent successfully",
+    });
+  } catch (error) {
+    logger.error("Error inside forgotPassword controller");
+    next(error);
+  }
+}
+
+export async function resetPassword(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    if (!req.body.email || !req.body.password)
+      throw new NonRetryableException(
+        ApplicationStaticErrors.INVALID_RESET_PASSWORD_REQUEST
+      );
+
+    const access_token = req.headers.authorization?.split(" ")[1];
+    if (!access_token)
+      throw new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED);
+
+    const refresh_token = req.body.refresh_token;
+    if (!refresh_token)
+      throw new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED);
+
+    const response = await service.resetPassword(
+      req.body.email,
+      req.body.password,
+      access_token,
+      refresh_token
+    );
+    res.json({
+      data: response,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    logger.error("Error inside resetPassword controller");
     next(error);
   }
 }

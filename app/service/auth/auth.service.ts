@@ -27,10 +27,15 @@ async function register(requestBody: RegisterRequestBody) {
     );
   }
 
-  logger.info("Signing up with phone number: " + requestBody.phone_number);
+  logger.info(
+    "Signing up with phone number: " +
+      requestBody.phone_number +
+      " email: " +
+      requestBody.email
+  );
 
-  const userSignUpSdkResponse = await supabaseSdk.signUpWithPhoneNumber(
-    requestBody.phone_number,
+  const userSignUpSdkResponse = await supabaseSdk.signUpWithEmail(
+    requestBody.email,
     requestBody.password
   );
 
@@ -78,9 +83,8 @@ async function logout(tokenObject: any) {
   await supabaseSdk.logoutUser();
 }
 
-async function checkValidUser(phone_number: string): Promise<boolean> {
-  const usersWithPhoneNumber =
-    await supabaseSdk.getUserByPhoneNumber(phone_number);
+async function checkValidUser(email: string): Promise<boolean> {
+  const usersWithPhoneNumber = await supabaseSdk.getUserByEmail(email);
 
   if (usersWithPhoneNumber.length === 0) {
     throw new NonRetryableException(
@@ -100,7 +104,7 @@ async function checkValidUser(phone_number: string): Promise<boolean> {
 async function login(requestBody: LoginRequestBody) {
   const validUser =
     requestBody.source === SOURCE.ADMIN
-      ? await checkValidUser(requestBody.phone_number)
+      ? await checkValidUser(requestBody.email)
       : true;
   if (!validUser) {
     throw new NonRetryableException(
@@ -108,8 +112,9 @@ async function login(requestBody: LoginRequestBody) {
     );
   }
 
-  const response = await supabaseSdk.loginWithPhoneNumber(
-    requestBody.phone_number
+  const response = await supabaseSdk.loginWithEmail(
+    requestBody.email,
+    requestBody.password
   );
 
   return response;
@@ -125,4 +130,39 @@ async function refreshToken(refresh_token: string) {
   return response;
 }
 
-export default { register, verify, logout, verifyToken, login, refreshToken };
+async function forgotPassword(email: string) {
+  const response = await supabaseSdk.forgotPassword(email);
+  return response;
+}
+
+async function resetPassword(
+  email: string,
+  password: string,
+  access_token: string,
+  refresh_token: string
+) {
+  const checkValidUser = await supabaseSdk.getUserByEmail(email);
+
+  if (checkValidUser.length === 0) {
+    throw new NonRetryableException(ApplicationStaticErrors.USER_NOT_EXISTS);
+  }
+
+  const response = await supabaseSdk.resetPassword(
+    email,
+    password,
+    access_token,
+    refresh_token
+  );
+  return response;
+}
+
+export default {
+  register,
+  verify,
+  logout,
+  verifyToken,
+  login,
+  refreshToken,
+  forgotPassword,
+  resetPassword,
+};

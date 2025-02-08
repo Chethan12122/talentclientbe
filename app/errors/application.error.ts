@@ -123,4 +123,19 @@ export const ApplicationStaticErrors = {
     statusCode: 400,
     description: "Invalid game category",
   },
+  INVALID_FORGOT_PASSWORD_REQUEST: {
+    errorCode: "TDS-121",
+    statusCode: 400,
+    description: "Invalid forgot password request",
+  },
+  INVALID_RESET_PASSWORD_REQUEST: {
+    errorCode: "TDS-122",
+    statusCode: 400,
+    description: "Invalid reset password request",
+  },
+  USER_NOT_EXISTS: {
+    errorCode: "TDS-123",
+    statusCode: 400,
+    description: "User not exists",
+  },
 };
