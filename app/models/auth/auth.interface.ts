@@ -4,6 +4,7 @@ export interface RegisterRequestBody {
   first_name: string;
   last_name: string;
   phone_number: string;
+  email: string;
   password: string;
   role: Role;
 }
@@ -14,6 +15,7 @@ export interface VerifyRequestBody {
 }
 
 export interface LoginRequestBody {
-  phone_number: string;
+  email: string;
+  password: string;
   source: SOURCE;
 }

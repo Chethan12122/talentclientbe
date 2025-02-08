@@ -13,6 +13,7 @@ const userRegisterRequestSchema = z.object({
   phone_number: z.string().refine((data) => isValidPhoneNumber(data), {
     message: "Invalid phone number",
   }),
+  email: z.string().email(),
   password: z
     .string()
     .min(1)
@@ -30,9 +31,11 @@ const userVerifyRequestSchema = z.object({
 });
 
 const userLoginRequestSchema = z.object({
-  phone_number: z.string().refine((data) => isValidPhoneNumber(data), {
-    message: "Invalid phone number",
-  }),
+  // phone_number: z.string().refine((data) => isValidPhoneNumber(data), {
+  //   message: "Invalid phone number",
+  // }),
+  email: z.string().email(),
+  password: z.string().min(1),
   source: z.enum(Object.values(SOURCE) as [string, ...string[]]),
 });
 

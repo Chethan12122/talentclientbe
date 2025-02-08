@@ -1,10 +1,12 @@
 import express from "express";
 import { methodNotAllowed } from "../../common/utils/common.utils";
 import {
+  forgotPassword,
   login,
   logout,
   refreshToken,
   register,
+  resetPassword,
   verify,
   verifyToken,
 } from "./auth.routes";
@@ -34,6 +36,11 @@ router.route("/refresh").post(refreshToken).all(methodNotAllowed);
 
 router.route("/logout").post(verifyToken, logout).all(methodNotAllowed);
 
-// router.route("/verifyToken").get(getLoginStatus).all(methodNotAllowed);
+router.route("/forgot-password").post(forgotPassword).all(methodNotAllowed);
+
+router
+  .route("/reset-password")
+  .post(verifyToken, resetPassword)
+  .all(methodNotAllowed);
 
 export default router;

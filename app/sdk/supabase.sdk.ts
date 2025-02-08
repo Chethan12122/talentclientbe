@@ -4,6 +4,7 @@ import { supabase } from "../common/supabase";
 import { ApplicationDynamicErrors } from "../errors/application.error";
 import { NonRetryableException } from "../errors/base.error";
 import { RegisterRequestBody } from "../models/auth/auth.interface";
+import { config } from "../common/config";
 
 async function signUpWithPhoneNumber(phone_number: string, password: string) {
   const { data, error } = await supabase.auth.signUp({
@@ -23,6 +24,23 @@ async function signUpWithPhoneNumber(phone_number: string, password: string) {
   return data;
 }
 
+async function signUpWithEmail(email: string, password: string) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        error.status || 500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+}
+
 async function addUser(registerBody: RegisterRequestBody, userId: string) {
   const { data, error } = await supabase.from("users").insert([
     {
@@ -31,6 +49,7 @@ async function addUser(registerBody: RegisterRequestBody, userId: string) {
       last_name: registerBody.last_name,
       phone_number: registerBody.phone_number,
       role: registerBody.role,
+      email: registerBody.email,
     },
   ]);
 
@@ -95,6 +114,23 @@ async function loginWithPhoneNumber(phone_number: string) {
     );
   }
 
+  return data;
+}
+
+async function loginWithEmail(email: string, password: string) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.name,
+        error.status || 500,
+        error.code || ""
+      )
+    );
+  }
   return data;
 }
 
@@ -166,6 +202,26 @@ async function getUserByPhoneNumber(phone_number: string) {
   return users;
 }
 
+async function getUserByEmail(email: string) {
+  const { data: users, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("email", email);
+
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+
+  // Return the first user if found, or null otherwise
+  return users;
+}
+
 async function refreshToken(refreshToken: string) {
   const { data, error } = await supabase.auth.refreshSession({
     refresh_token: refreshToken,
@@ -182,6 +238,47 @@ async function refreshToken(refreshToken: string) {
   return data;
 }
 
+async function forgotPassword(email: string) {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: config.urls.resetPasswordUrl,
+  });
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+}
+
+async function resetPassword(
+  email: string,
+  password: string,
+  access_token: string,
+  refresh_token: string
+) {
+  await supabase.auth.setSession({
+    access_token: access_token,
+    refresh_token: refresh_token,
+  });
+  const { data: response, error } = await supabase.auth.updateUser({
+    password,
+  });
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return response;
+}
+
 export default {
   signUpWithPhoneNumber,
   verifyPhoneNumber,
@@ -193,4 +290,9 @@ export default {
   getUserByPhoneNumberAndRole,
   getUserByPhoneNumber,
   refreshToken,
+  signUpWithEmail,
+  loginWithEmail,
+  getUserByEmail,
+  forgotPassword,
+  resetPassword,
 };

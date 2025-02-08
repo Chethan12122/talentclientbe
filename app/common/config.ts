@@ -20,6 +20,15 @@ const configuration = convict({
     env: "BASE_URL",
     arg: "base_url",
   },
+  urls: {
+    resetPasswordUrl: {
+      doc: "Reset Password Url",
+      format: String,
+      default: "http://localhost:5173/reset-password",
+      env: "RESET_PASSWORD_URL",
+      arg: "reset_password_url",
+    },
+  },
   nodeEnv: {
     doc: "The application environment",
     format: ["development", "production", "test"],
