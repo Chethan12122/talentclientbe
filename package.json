@@ -13,10 +13,13 @@
       "npx eslint --fix"
     ]
   },
+  "engines": {
+    "node": "20.17.0"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "npm run build && npm run start", 
+    "dev": "npm run build && npm run start",
     "lint": "npx eslint ."
   },
   "keywords": [],
