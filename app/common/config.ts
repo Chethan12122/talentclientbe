@@ -55,8 +55,8 @@ const configuration = convict({
   googleAuth: {
     json: {
       doc: "Google auth json",
-      format: Object,
-      default: {
+      format: "json",
+      default: JSON.stringify({
         type: "service_account",
         project_id: "talent-identification-448810",
         private_key_id: "8aa4748090216e44cdb78b8b69d0d068d7396a2f",
@@ -72,7 +72,7 @@ const configuration = convict({
         client_x509_cert_url:
           "https://www.googleapis.com/robot/v1/metadata/x509/talent%40talent-identification-448810.iam.gserviceaccount.com",
         universe_domain: "googleapis.com",
-      },
+      }),
       env: "GOOGLE_AUTH_JSON",
     },
     sheet_id: {
@@ -87,6 +87,20 @@ const configuration = convict({
       default: "Sheet1",
       env: "GOOGLE_SHEET_NAME",
     },
+  },
+});
+
+convict.addFormat({
+  name: "json",
+  validate: function (val) {
+    try {
+      JSON.parse(val);
+    } catch (e) {
+      throw new Error("Must be a valid JSON string");
+    }
+  },
+  coerce: function (val) {
+    return JSON.parse(val);
   },
 });
 
