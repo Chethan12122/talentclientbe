@@ -1,6 +1,7 @@
 export interface InstituteRequest {
   name: string;
   venue: string;
+  no_of_teams?: number;
 }
 
 export interface InstituteResponse {

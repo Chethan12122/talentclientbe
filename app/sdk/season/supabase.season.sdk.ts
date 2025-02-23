@@ -123,10 +123,31 @@ async function getSeasonById(seasonId: string) {
   return data;
 }
 
+async function getCurrentSeason(date: string) {
+  const { data, error } = await supabase
+    .from("seasons")
+    .select("*")
+    .filter("start_date", "lte", date)
+    .filter("end_date", "gte", date);
+
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+
+  return data[0];
+}
+
 export default {
   createSeason,
   getSeasonByName,
   updateSeason,
   getAllSeasons,
   getSeasonById,
+  getCurrentSeason,
 };

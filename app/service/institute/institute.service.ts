@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { SeasonResponse } from "../../models/season/season.interface";
 import { TEAM_TYPE } from "../../common/enum";
 import {
   InstituteRequest,
@@ -9,21 +10,41 @@ import {
 import { TeamRequest } from "../../models/team/team.interface";
 import supabaseInstituteSdk from "../../sdk/institute/supabase.institute.sdk";
 import supabaseTeamSdk from "../../sdk/team/supabase.team.sdk";
+import seasonService from "../season/season.service";
 
 const createInstitute = async (instituteRequest: InstituteRequest) => {
-  const response = await supabaseInstituteSdk.createInstitute(instituteRequest);
+  const { name, venue } = instituteRequest;
+  const noOfTeams = instituteRequest.no_of_teams || 2;
+  const currentSeason: SeasonResponse = await seasonService.getCurrentSeason();
+  const response = await supabaseInstituteSdk.createInstitute({
+    name,
+    venue,
+  });
 
   if (response && response.institute_id) {
-    const teamRequests: TeamRequest[] = [
-      {
+    const teamRequests: TeamRequest[] = []; // Initialize as an empty array
+
+    if (noOfTeams === 1) {
+      teamRequests.push({
         institute_id: response.institute_id,
         team_type: TEAM_TYPE.HIGH_PERFORMANCE,
-      },
-      {
-        institute_id: response.institute_id,
-        team_type: TEAM_TYPE.DEVELOPMENT,
-      },
-    ];
+        season_id: currentSeason?.season_id,
+      });
+    } else {
+      teamRequests.push(
+        {
+          institute_id: response.institute_id,
+          team_type: TEAM_TYPE.HIGH_PERFORMANCE,
+          season_id: currentSeason?.season_id,
+        },
+        {
+          institute_id: response.institute_id,
+          team_type: TEAM_TYPE.DEVELOPMENT,
+          season_id: currentSeason?.season_id,
+        }
+      );
+    }
+
     await supabaseTeamSdk.createTeam(teamRequests);
   }
   return response;
