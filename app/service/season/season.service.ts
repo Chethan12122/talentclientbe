@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { SeasonRequest } from "../../models/season/season.interface";
+import {
+  SeasonRequest,
+  SeasonResponse,
+} from "../../models/season/season.interface";
 import supabaseSdk from "../../sdk/season/supabase.season.sdk";
 
 async function createOrUpdate(seasonRequest: SeasonRequest) {
@@ -38,9 +41,16 @@ async function getSeasonById(season_id: string) {
   return response;
 }
 
+async function getCurrentSeason(): Promise<SeasonResponse> {
+  let date = new Date().toISOString().split("T")[0]; // Formatting to "YYYY-MM-DD HH:MM:SS"
+  const response = await supabaseSdk.getCurrentSeason(date); // Corrected function call
+  return response;
+}
+
 export default {
   createOrUpdate,
   getAllSeasons,
   getSeasonByName,
   getSeasonById,
+  getCurrentSeason,
 };

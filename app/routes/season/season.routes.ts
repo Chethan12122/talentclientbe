@@ -55,3 +55,20 @@ export async function getSeasonByName(
     next(error);
   }
 }
+
+export async function getCurrentSeason(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const response = await seasonService.getCurrentSeason();
+    res.json({
+      data: response,
+      message: "Season fetched successfully",
+    });
+  } catch (error) {
+    logger.error("Error inside season get by name controller");
+    next(error);
+  }
+}

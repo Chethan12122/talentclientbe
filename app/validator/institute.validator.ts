@@ -9,6 +9,7 @@ import { logger } from "../common/logger";
 const instituteCreateSchema = z.object({
   name: z.string().min(1),
   venue: z.string().optional(),
+  no_of_teams: z.number(),
 });
 
 function validateInstituteRequest(
