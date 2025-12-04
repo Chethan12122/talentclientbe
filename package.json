@@ -2,7 +2,7 @@
   "name": "talent-identification-be",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server.js",
+  "main": "app/server.ts",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "ts-node-dev --respawn app/server.ts",
+    "dev": "npm run build && npm run start",
     "lint": "npx eslint ."
   },
   "keywords": [],
@@ -34,6 +34,7 @@
     "express-winston": "^4.2.0",
     "googleapis": "^144.0.0",
     "helmet": "^8.0.0",
+    "qrcode": "^1.5.4",
     "winston": "^3.17.0",
     "zod": "^3.24.1"
   },
@@ -42,12 +43,12 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.18.12",
+    "@types/node": "^22.10.2",
+    "@types/qrcode": "^1.5.6",
     "@types/supertest": "^6.0.2",
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^8.18.2",
     "@typescript-eslint/parser": "^8.18.2",
-    "@vercel/node": "^5.0.2",
     "eslint": "^8.53.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
