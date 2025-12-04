@@ -19,4 +19,11 @@ const CORS_OPTIONS = {
   optionsSuccessStatus: 204,
 };
 
-export { HTTP_STATUS, REGEX, CORS_OPTIONS };
+const GROUPS = {
+  GROUP_A: "GROUP_A",
+  GROUP_B: "GROUP_B",
+  GROUP_C: "GROUP_C",
+  GROUP_D: "GROUP_D",
+};
+
+export { HTTP_STATUS, REGEX, CORS_OPTIONS, GROUPS };

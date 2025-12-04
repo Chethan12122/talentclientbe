@@ -32,3 +32,22 @@ export enum SOURCE {
   ADMIN = "ADMIN",
   APP = "APP",
 }
+
+export enum LEAGUE_STATUS {
+  UPCOMING = "UPCOMING",
+  LIVE = "ACTIVE",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+}
+
+export enum EVENT_TYPE {
+  TRACK = "TRACK",
+  FIELD = "FIELD",
+}
+
+export enum GROUPS {
+  A = "A",
+  B = "B",
+  C = "C",
+  D = "D"
+}

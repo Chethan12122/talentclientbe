@@ -33,7 +33,7 @@ import { NonRetryableException } from "../../errors/base.error";
 import { ApplicationStaticErrors } from "../../errors/application.error";
 
 async function generateFixturesForGame(game_id: string, season_id: string) {
-  const gameCategories = await gameSupabase.getAllGameCategories(game_id);
+  const gameCategories = await gameSupabase.getAllGameCategories();
   let response: any[] = []; // Initialize the response array
   for (const gameCategory of gameCategories) {
     const fixtures = await generateFixtures(
@@ -385,7 +385,7 @@ async function getFixturesForCategoryAndSeason(
   const venueMap: Map<string, VenueResponse> = convertToVenueMap(venues);
 
   //get all game_categories
-  const game_categories = await gameService.getAllGameCategories("");
+  const game_categories = await gameService.getAllGameCategories();
 
   const gameCategoryMap: Map<string, GameCategoryResponse> =
     convertGameCategoryToMap(game_categories);
@@ -425,7 +425,7 @@ async function getFixturesForCategoryAndSeason(
 }
 
 async function getFixturesForGame(game_id: string, season_id: string) {
-  const gameCategories = await gameSupabase.getAllGameCategories(game_id);
+  const gameCategories = await gameSupabase.getAllGameCategories();
   let response: any[] = [];
 
   for (const gameCategory of gameCategories) {

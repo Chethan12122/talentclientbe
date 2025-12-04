@@ -24,9 +24,7 @@ export async function getAllGameCategories(
   next: NextFunction
 ): Promise<void> {
   try {
-    const response = await gameService.getAllGameCategories(
-      req.query.game_id as string
-    );
+    const response = await gameService.getAllGameCategories();
     res.json({
       data: response,
       message: "Game categories fetched successfully",

@@ -12,6 +12,9 @@ import instituteRouter from "./routes/institute/index";
 import fixturesRouter from "./routes/fixtures/index";
 import scoresRouter from "./routes/score/index";
 import venueRouter from "./routes/venue/index";
+import leagueRouter from "./routes/league/index";
+import districtRouter from "./routes/district/index";
+import eventRouter from "./routes/events/index";
 import { CORS_OPTIONS } from "./common/constants";
 import cors from "cors";
 
@@ -33,6 +36,9 @@ app.use("/api/game_category", gameCategoryRouter);
 app.use("/api/fixtures", fixturesRouter);
 app.use("/api/scores", scoresRouter);
 app.use("/api/venue", venueRouter);
+app.use("/api/league", leagueRouter);
+app.use("/api/district", districtRouter);
+app.use("/api/event", eventRouter);
 
 // Error Handling Middleware
 app.use(genericHandler);

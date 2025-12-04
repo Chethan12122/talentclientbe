@@ -93,7 +93,7 @@ async function getGameCategoryById(gameCategoryId: string) {
   const { data, error } = await supabase
     .from("game_categories")
     .select("*")
-    .eq("category_id", gameCategoryId)
+    .eq("id", gameCategoryId)
     .single();
   if (error) {
     throw new NonRetryableException(
@@ -111,7 +111,7 @@ async function deleteGameCategoryById(gameCategoryId: string) {
   const { data, error } = await supabase
     .from("game_categories")
     .delete()
-    .eq("category_id", gameCategoryId);
+    .eq("id", gameCategoryId);
   if (error) {
     throw new NonRetryableException(
       ApplicationDynamicErrors.SDK_API_ERROR(
@@ -124,12 +124,8 @@ async function deleteGameCategoryById(gameCategoryId: string) {
   return data;
 }
 
-async function getAllGameCategories(game_id: string) {
-  let query = supabase.from("game_categories").select("*");
-
-  if (game_id) {
-    query = query.eq("game_id", game_id);
-  }
+async function getAllGameCategories() {
+  const query = supabase.from("game_categories").select("*");
 
   const { data, error } = await query;
   if (error) {

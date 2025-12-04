@@ -40,8 +40,8 @@ async function deleteGameCategoryById(game_id: string) {
   return response;
 }
 
-async function getAllGameCategories(game_id: string) {
-  const response = await supabaseGameSdk.getAllGameCategories(game_id);
+async function getAllGameCategories() {
+  const response = await supabaseGameSdk.getAllGameCategories();
   return response;
 }
 

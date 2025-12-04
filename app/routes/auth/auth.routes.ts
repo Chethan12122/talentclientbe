@@ -85,9 +85,13 @@ export async function verifyToken(
     const access_token: string = req.headers.authorization?.split(" ")[1] || "";
     if (!access_token)
       throw new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED);
+    
     const response = await service.verifyToken(access_token);
-    if (!response)
+    if (!response || !response.user)
       throw new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED);
+
+    // Attach userId to request - use response.user.id
+    req.userId = response.user.id; // This will be "98398ee0-7843-4ebb-9d9c-af2e286598a9"
 
     next();
   } catch (error) {
@@ -95,6 +99,7 @@ export async function verifyToken(
     next(new NonRetryableException(ApplicationStaticErrors.UNAUTHORIZED));
   }
 }
+
 
 export async function refreshToken(
   req: Request,

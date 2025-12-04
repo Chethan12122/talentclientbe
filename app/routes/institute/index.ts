@@ -14,7 +14,7 @@ const router = express.Router({});
 router
   .route("/")
   .post(verifyToken, validateInstituteRequest, createInstitute)
-  .get(verifyToken, getAllInstitutes)
+  .get(getAllInstitutes)
   .all(methodNotAllowed);
 
 router

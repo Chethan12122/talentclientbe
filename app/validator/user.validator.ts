@@ -46,6 +46,24 @@ function validateUserRegisterRequest(
 ) {
   try {
     userRegisterRequestSchema.parse(req.body);
+    const role = req.body.role;
+    if (
+      role === Role.Athlete ||
+      role === Role.Referee ||
+      role === Role.TeamManager
+    ) {
+      if (!req.body.institute_id) {
+        throw new NonRetryableException(
+          ApplicationStaticErrors.INVALID_REGISTER_REQUEST
+        );
+      }
+
+      if (!req.body.district_id) {
+        throw new NonRetryableException(
+          ApplicationStaticErrors.INVALID_REGISTER_REQUEST
+        );
+      }
+    }
     next();
   } catch (error: any) {
     throw new NonRetryableException(

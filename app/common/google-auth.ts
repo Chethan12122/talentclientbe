@@ -4,7 +4,6 @@ import { logger } from "./logger";
 
 // Load credentials from the service account key JSON
 const credentials = config.googleAuth.json || {};
-logger.info("credentials", credentials);
 
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 

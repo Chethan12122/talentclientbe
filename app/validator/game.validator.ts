@@ -28,8 +28,7 @@ function validateGameRequest(req: Request, res: Response, next: NextFunction) {
 }
 
 const gameCategoryCreateSchema = z.object({
-  game_id: z.string().min(1),
-  category_name: z
+  name: z
     .string()
     .min(1)
     .transform((value) => value.toUpperCase()),

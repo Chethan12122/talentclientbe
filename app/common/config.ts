@@ -39,15 +39,15 @@ const configuration = convict({
     url: {
       doc: "Supabase url",
       format: String,
-      default: "https://gvdlmloehyoecithrqer.supabase.co",
+      default: "https://ibdzcfociryordkfpkma.supabase.co",
       env: "SUPABASE_URL",
       arg: "supabase_url",
-    },
+    },  
     key: {
       doc: "Supabase key",
       format: String,
       default:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZGxtbG9laHlvZWNpdGhycWVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ1NDE2NzYsImV4cCI6MjA1MDExNzY3Nn0.HZmRK59JXcCinYedTidzr9ASr6_8MZTtFP93D9MhRAI",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImliZHpjZm9jaXJ5b3Jka2Zwa21hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1MjkyNzMsImV4cCI6MjA3MjEwNTI3M30.csg054LZ89BGoBQIRTyoNloIqC15Le_eUZomUnPPrXM",
       env: "SUPABASE_KEY",
       arg: "supabase_key",
     },
@@ -72,6 +72,13 @@ const configuration = convict({
       env: "GOOGLE_SHEET_NAME",
     },
   },
+  appCodeUrl: {
+    doc: "App Code Url",
+    format: String,
+    default: "http://localhost:5173",
+    env: "APP_CODE_URL",
+    arg: "app_code_url",
+  }
 });
 
 configuration.validate({ allowed: "strict" });

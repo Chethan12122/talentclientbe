@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { generateScannerCodeUrl } from "../../common/utils/common.utils";
 import { Role, SOURCE } from "../../common/enum";
 import { logger } from "../../common/logger";
 import { ApplicationStaticErrors } from "../../errors/application.error";
@@ -49,8 +50,18 @@ async function register(requestBody: RegisterRequestBody) {
     );
   }
 
+  const scannerCodeUrl: string = await generateScannerCodeUrl(
+    userSignUpSdkResponse.user.id
+  );
+
+  const body = {
+    ...requestBody,
+    scanner_code_url: scannerCodeUrl,
+  }
+
+
   const response = await supabaseSdk.addUser(
-    requestBody,
+    body,
     userSignUpSdkResponse.user.id
   );
   return response;

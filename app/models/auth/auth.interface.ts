@@ -7,6 +7,9 @@ export interface RegisterRequestBody {
   email: string;
   password: string;
   role: Role;
+  institute_id: string;
+  district_id: string;
+  scanner_code_url: string;
 }
 
 export interface VerifyRequestBody {

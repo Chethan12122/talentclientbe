@@ -2,6 +2,7 @@ import { supabase } from "../../common/supabase";
 import { ApplicationDynamicErrors } from "../../errors/application.error";
 import { NonRetryableException } from "../../errors/base.error";
 import {
+  InstitueGroupResponse,
   InstituteRequest,
   VenueRequest,
 } from "../../models/institute/institute.interface";
@@ -198,6 +199,75 @@ const getUsersAssociatedWithInstitute = async (instituteId: string) => {
   return data;
 };
 
+const getInstitutesByDistrictId = async (districtId: string) => {
+  const { data, error } = await supabase
+    .from("institutes")
+    .select("*")
+    .eq("district_id", districtId);
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+};
+
+const insertInstituteGroupAssignments = async (
+  assignments: InstitueGroupResponse[]
+) => {
+  const { data, error } = await supabase
+    .from("institute_group_assignments")
+    .insert(assignments);
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+};
+
+const getInstituteGroupAssignments = async (groupIds: string[]) => {
+  const { data, error } = await supabase
+    .from("institute_group_assignments")
+    .select("*")
+    .in("group_id", groupIds);
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+};
+
+const getInstitutesByIds = async (instituteIds: string[]) => {
+  const { data, error } = await supabase
+    .from("institutes")
+    .select("*")
+    .in("institute_id", instituteIds);
+  if (error) {
+    throw new NonRetryableException(
+      ApplicationDynamicErrors.SDK_API_ERROR(
+        error.message,
+        500,
+        error.code || ""
+      )
+    );
+  }
+  return data;
+};
+
 export default {
   createInstitute,
   updateInstitute,
@@ -211,4 +281,8 @@ export default {
   updateVenue,
   getInstituteByVenueId,
   getUsersAssociatedWithInstitute,
+  getInstitutesByDistrictId,
+  insertInstituteGroupAssignments,
+  getInstituteGroupAssignments,
+  getInstitutesByIds,
 };

@@ -5,5 +5,9 @@ import { logger } from './common/logger';
 const PORT = config.port;
 
 app.listen(PORT, () => {
-  logger.info(`Server running in ${config.nodeEnv} mode on port ${PORT} for talent identification bff service`);
+  logger.info("====================================================");
+  logger.info("🚀  Talent Identification BFF Service Started!");
+  logger.info(`🌍  Environment : ${config.nodeEnv}`);
+  logger.info(`🔗  Listening   : http://localhost:${PORT}`);
+  logger.info("====================================================");
 });

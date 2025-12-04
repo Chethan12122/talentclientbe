@@ -1,52 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { SeasonResponse } from "../../models/season/season.interface";
-import { TEAM_TYPE } from "../../common/enum";
+import supabaseDistrictSdk from "../../sdk/district/supabase.district.sdk";
 import {
+  InstituteDistrictResponse,
   InstituteRequest,
-  InstituteResponse,
   VenueInstituteResponse,
   VenueRequest,
 } from "../../models/institute/institute.interface";
-import { TeamRequest } from "../../models/team/team.interface";
 import supabaseInstituteSdk from "../../sdk/institute/supabase.institute.sdk";
-import supabaseTeamSdk from "../../sdk/team/supabase.team.sdk";
-import seasonService from "../season/season.service";
 
 const createInstitute = async (instituteRequest: InstituteRequest) => {
-  const { name, venue } = instituteRequest;
-  const noOfTeams = instituteRequest.no_of_teams || 2;
-  const currentSeason: SeasonResponse = await seasonService.getCurrentSeason();
+  const { name } = instituteRequest;
   const response = await supabaseInstituteSdk.createInstitute({
     name,
-    venue,
+    district_id: instituteRequest.district_id,
   });
 
-  if (response && response.institute_id) {
-    const teamRequests: TeamRequest[] = []; // Initialize as an empty array
-
-    if (noOfTeams === 1) {
-      teamRequests.push({
-        institute_id: response.institute_id,
-        team_type: TEAM_TYPE.HIGH_PERFORMANCE,
-        season_id: currentSeason?.season_id,
-      });
-    } else {
-      teamRequests.push(
-        {
-          institute_id: response.institute_id,
-          team_type: TEAM_TYPE.HIGH_PERFORMANCE,
-          season_id: currentSeason?.season_id,
-        },
-        {
-          institute_id: response.institute_id,
-          team_type: TEAM_TYPE.DEVELOPMENT,
-          season_id: currentSeason?.season_id,
-        }
-      );
-    }
-
-    await supabaseTeamSdk.createTeam(teamRequests);
-  }
   return response;
 };
 
@@ -63,11 +31,12 @@ const updateInstitute = async (
 
 const getAllInstitutes = async () => {
   const allInstitutes = await supabaseInstituteSdk.getAllInstitutes();
+
   const response: any[] = await Promise.all(
-    allInstitutes.map(async (institute: InstituteResponse) => ({
+    allInstitutes.map(async (institute: InstituteDistrictResponse) => ({
       ...institute,
-      venue_details: institute.venue
-        ? await getVenueById(institute.venue)
+      district_details: institute.institute_id
+        ? await supabaseDistrictSdk.getDistrictById(institute.district_id)
         : null,
     }))
   );
@@ -82,6 +51,9 @@ const getInstituteById = async (institute_id: string) => {
   return {
     ...institute_details,
     users_associated: await getUsersAssociatedWithInstitute(institute_id),
+    district_details: await supabaseDistrictSdk.getDistrictById(
+      institute_details.district_id
+    ),
   };
 };
 

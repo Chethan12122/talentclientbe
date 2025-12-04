@@ -13,6 +13,13 @@ export const ApplicationDynamicErrors = {
       description: name,
     };
   },
+  INSTITUTION_ASSIGNEMENT_FAILURE: (message: string) => {
+    return {
+      errorCode: "TDD-102",
+      statusCode: 400,
+      description: message,
+    };
+  }
 };
 
 export const ApplicationStaticErrors = {
@@ -137,5 +144,20 @@ export const ApplicationStaticErrors = {
     errorCode: "TDS-123",
     statusCode: 400,
     description: "User not exists",
+  },
+  INVALID_LEAGUE_REQUEST: {
+    errorCode: "TDS-124",
+    statusCode: 400,
+    description: "Invalid league request",
+  },
+  INVALID_DISTRICT_REQUEST: {
+    errorCode: "TDS-125",
+    statusCode: 400,
+    description: "Invalid district request",
+  },
+  INVALID_EVENT_REQUEST: {
+    errorCode: "TDS-126",
+    statusCode: 400,
+    description: "Invalid event request",
   },
 };

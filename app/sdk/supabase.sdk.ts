@@ -50,6 +50,9 @@ async function addUser(registerBody: RegisterRequestBody, userId: string) {
       phone_number: registerBody.phone_number,
       role: registerBody.role,
       email: registerBody.email,
+      institute_id: registerBody.institute_id,
+      district_id: registerBody.district_id,
+      scanner_code_url: registerBody.scanner_code_url,
     },
   ]);
 

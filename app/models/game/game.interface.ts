@@ -5,14 +5,13 @@ export interface GameRequest {
 }
 
 export interface GameCategoryRequest {
-  game_id: string;
-  game_category_name: string;
+  name: string;
   type: GAME_CATEGORY_TYPE;
 }
 
 export interface GameCategoryResponse {
   game_id: string;
-  game_category_name: string;
+  name: string;
   type: GAME_CATEGORY_TYPE;
   category_id: string;
 }
