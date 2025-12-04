@@ -2,7 +2,7 @@
   "name": "talent-identification-be",
   "version": "1.0.0",
   "description": "",
-  "main": "app/server.ts",
+  "main": "dist/server.js",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "npm run build && npm run start",
+    "dev": "ts-node-dev --respawn app/server.ts",
     "lint": "npx eslint ."
   },
   "keywords": [],
